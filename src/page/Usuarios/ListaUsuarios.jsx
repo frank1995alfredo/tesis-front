@@ -1,40 +1,57 @@
 import { useEffect, useState } from "react";
 import MaterialTable from "material-table";
 import Navbar from "../../components/Navbar/Navbar";
-import ModalEliminarLabor from "./ModalEliminarLabor";
-import ModalAgregarLabor from "./ModalAgregarLabor";
-import ModalEditarLabor from "./ModalEditarLabor";
+import ModalEliminarUsuario from "./ModalEliminarUsuario";
+import ModalAgregarUsuario from "./ModalAgregarUsuario";
+import ModalEditarUsuario from "./ModalEditarUsuario";
 import { Link } from "react-router-dom";
-import URL from "../../configuration/URL";
-
 
 const columns = [
   {
     title: "#",
-    render: (rowData) => rowData.tableData.id + 1,
+  },
+  {
+    title: "Usuario",
+    field: "usuario",
   },
   {
     title: "Nombre",
     field: "nombre",
   },
-];
-
-
-
-const ListaLabor = () => {
+  {
+    title: "Apellido",
+    field: "apellido",
+  },
+  {
+    title: "Cédula",
+    field: "cedula",
+  },
   
-  const [listaLabor, setListaLabor] = useState([]);
-
+];
+const data = [
+  {
+    id: 1,
+    usuario: "usuario 1",
+    nombre: "nombre 1",
+    apellido: "apellido 1",
+    cedula: "2100373873"
+  },
+];
+const ListaUsuarios = () => {
+  
   const [modalEliminar, setModalEliminar] = useState(false);
   const [modalInsertar, setModalInsertar] = useState(false);
   const [modalEditar, setModalEditar] = useState(false);
-  const [laborSeleccionado, setLaborSeleccionado] = useState({
+  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState({
     id: 0,
+    usuario: "",
     nombre: "",
+    apellido: "",
+    cedula: "",
   });
 
   const seleccionarLabor = (labor, caso) => {
-    setLaborSeleccionado(labor);
+    setUsuarioSeleccionado(labor);
 
     if (caso === "Eliminar") {
       abrirCerrarModalEliminar();
@@ -56,31 +73,9 @@ const ListaLabor = () => {
     setModalEditar(!modalEditar);
   };
 
-  useEffect(() => {
-    const abortController = new AbortController();
-    //LISTAR ARTICULOS
-    const listaLabores = async () => {
-      try {
-        let response = await fetch(`${URL}/listaTipoLabor`, {
-          signal: abortController.signal,
-        });
-        response = await response.json();
-        setListaLabor(response.data);
-      } catch (error) {
-        console.log(error);
-        if (abortController.signal.aborted) {
-          console.log(abortController.signal.aborted);
-        } else throw error;
-      }
-    };
-
-    listaLabores();
-    return () => abortController.abort();
-  }, []);
-
   return (
     <>
-      <Navbar nombre="Labores">
+      <Navbar nombre="Usuarios">
         <div className="container-fluid px-4">
           <div className="row">
             <div className="col-auto">
@@ -93,29 +88,23 @@ const ListaLabor = () => {
                 <i className="fas fa-plus-circle "></i> Nueva Labor
               </button>
             </div>
-            <div className="col-auto">
-            {" "}
-              <Link to="/actividades" type="button" className="btn btn-secondary btn-sm">
-                <i class="fas fa-arrow-left"></i> Regresar
-              </Link>
-            </div>
           </div>
           <div className="row my-4">
             <div className="col">
               <MaterialTable
                 columns={columns}
-                data={listaLabor}
-                title="Lista de Labores"
+                data={data}
+                title="Lista de Usuarios"
                 actions={[
                   {
                     icon: "edit",
-                    tooltip: "Editar Labor",
+                    tooltip: "Editar Usuario",
                     onClick: (event, rowData) =>
                       seleccionarLabor(rowData, "Editar"),
                   },
                   {
                     icon: "delete",
-                    tooltip: "Eliminar Labor",
+                    tooltip: "Eliminar Usuario",
                     onClick: (event, rowData) =>
                       seleccionarLabor(rowData, "Eliminar"),
                   },
@@ -133,31 +122,24 @@ const ListaLabor = () => {
           </div>
         </div>
       </Navbar>
-      <ModalAgregarLabor
-        setLaborSeleccionado={setLaborSeleccionado}
-        laborSeleccionado={laborSeleccionado}
-        listaLabor={listaLabor}
-        setListaLabor={setListaLabor}
+      <ModalAgregarUsuario
+        setUsuarioSeleccionado={setUsuarioSeleccionado}
         abrirCerrarModalInsertar={abrirCerrarModalInsertar}
         modalInsertar={modalInsertar}
       />
-      <ModalEliminarLabor
-        laborSeleccionado={laborSeleccionado}
-        listaLabor={listaLabor}
-        setListaLabor={setListaLabor}
+      <ModalEliminarUsuario
+        usuarioSeleccionado={usuarioSeleccionado}
         abrirCerrarModalEliminar={abrirCerrarModalEliminar}
         modalEliminar={modalEliminar}
       />
-      <ModalEditarLabor
-        setLaborSeleccionado={setLaborSeleccionado}
-        laborSeleccionado={laborSeleccionado}
+      <ModalEditarUsuario
+        setUsuarioSeleccionado={setUsuarioSeleccionado}
+        usuarioSeleccionado={usuarioSeleccionado}
         abrirCerrarModalEditar={abrirCerrarModalEditar}
         modalEditar={modalEditar}
-        listaLabor={listaLabor}
-        setListaLabor={setListaLabor}
       />
     </>
   );
 };
 
-export default ListaLabor;
+export default ListaUsuarios;

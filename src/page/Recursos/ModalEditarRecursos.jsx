@@ -10,41 +10,38 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ModalEditarAfectacion = ({
+const ModalEditarRecursos = ({
   modalEditar,
   abrirCerrarModalEditar,
-  afectacionSeleccionado,
-  setAfectacionSeleccionado,
+  recursosSeleccionado,
+  setRecursosSeleccionado,
 
 }) => {
   
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setAfectacionSeleccionado((prevState) => ({
+    setRecursosSeleccionado((prevState) => ({
       ...prevState,
       [name]: value,
     }));
   };
   const styles = useStyles();
 
-  
-
   return (
     <Modal open={modalEditar} close={abrirCerrarModalEditar}>
-      <h3>Editar Afectación</h3>
+      <h3>Editar Recursos</h3>
       <TextField
         className={styles.inputMaterial}
         label="Nombre"
-        name="nombre_afectacion"
-        value={afectacionSeleccionado.nombre_afectacion}
+        name="nombre"
+        value={recursosSeleccionado.nombre}
         onChange={handleChange}
       />
-      <br />
       <TextField
         className={styles.inputMaterial}
-        label="Descripción"
+        label="Descripcion"
         name="descripcion"
-        value={afectacionSeleccionado.descripcion}
+        value={recursosSeleccionado.nombre}
         onChange={handleChange}
       />
       <br />
@@ -74,4 +71,5 @@ const ModalEditarAfectacion = ({
   );
 };
 
-export default ModalEditarAfectacion;
+export default ModalEditarRecursos;
+

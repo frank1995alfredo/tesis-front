@@ -43,7 +43,7 @@ const Actividades = () => {
             <div class="p-3 bg-white shadow-sm d-flex justify-content-around align-items-center rounded">
               <div>
                 <Link
-                  to="/"
+                  to="/parcela"
                   className="list-group-item list-group-item-action bg-transparent second-text active"
                 >
                   <p className="text-center">Parcelas</p>

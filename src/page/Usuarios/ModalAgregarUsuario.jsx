@@ -1,8 +1,8 @@
 import { TextField, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Modal from "../../components/Modals/Modal";
+import AddCircleIcon from "@material-ui/icons/AddCircle";
 import CancelIcon from "@material-ui/icons/Cancel";
-import EditIcon from '@material-ui/icons/Edit';
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -10,43 +10,59 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ModalEditarAfectacion = ({
-  modalEditar,
-  abrirCerrarModalEditar,
-  afectacionSeleccionado,
-  setAfectacionSeleccionado,
-
+const ModalAgregarUsuario = ({
+  modalInsertar,
+  abrirCerrarModalInsertar,
+  setUsuarioSeleccionado,
 }) => {
-  
+  const styles = useStyles();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setAfectacionSeleccionado((prevState) => ({
+    setUsuarioSeleccionado((prevState) => ({
       ...prevState,
       [name]: value,
     }));
   };
-  const styles = useStyles();
-
-  
 
   return (
-    <Modal open={modalEditar} close={abrirCerrarModalEditar}>
-      <h3>Editar Afectación</h3>
+    <Modal open={modalInsertar} close={abrirCerrarModalInsertar}>
+      <h3>Nuevo usuario</h3>
       <TextField
         className={styles.inputMaterial}
-        label="Nombre"
-        name="nombre_afectacion"
-        value={afectacionSeleccionado.nombre_afectacion}
+        label="Usuario"
+        name="usuario"
         onChange={handleChange}
       />
       <br />
       <TextField
         className={styles.inputMaterial}
-        label="Descripción"
-        name="descripcion"
-        value={afectacionSeleccionado.descripcion}
+        label="Contraseña"
+        name="password"
         onChange={handleChange}
       />
+      <br />
+      <TextField
+        className={styles.inputMaterial}
+        label="Nombre"
+        name="nombre"
+        onChange={handleChange}
+      />
+      <br />
+      <TextField
+        className={styles.inputMaterial}
+        label="Apellido"
+        name="apellido"
+        onChange={handleChange}
+      />
+      <br />
+      <TextField
+        className={styles.inputMaterial}
+        label="Cédula"
+        name="cedula"
+        onChange={handleChange}
+      />
+     
       <br />
       <br />
       <div align="right">
@@ -54,17 +70,17 @@ const ModalEditarAfectacion = ({
           variant="contained"
           color="primary"
           size="small"
-          //onClick={() => editarCategoria()}
+          // onClick={() => agregarCategoria()}
         >
           {" "}
-          <EditIcon/>
-          Editar
+          <AddCircleIcon />
+          Insertar
         </Button>{" "}
         <Button
           variant="contained"
           color="secondary"
           size="small"
-          onClick={() => abrirCerrarModalEditar()}
+          onClick={() => abrirCerrarModalInsertar()}
         >
           <CancelIcon />
           Cancelar
@@ -74,4 +90,4 @@ const ModalEditarAfectacion = ({
   );
 };
 
-export default ModalEditarAfectacion;
+export default ModalAgregarUsuario;

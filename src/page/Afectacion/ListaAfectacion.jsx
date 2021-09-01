@@ -7,10 +7,13 @@ import ModalEliminarAfectacion from "./ModalEliminarAfectacion";
 import ModalAgregarAfectacion from "./ModalAgregarAfectacion";
 import ModalEditarAfectacion from "./ModalEditarAfectacion";
 import Chip from "@material-ui/core/Chip";
+import { Link } from "react-router-dom";
+import URL from "../../configuration/URL";
 
 const columns = [
   {
     title: "#",
+    render: (rowData) => rowData.tableData.id + 1,
   },
   {
     title: "Nombre",
@@ -35,21 +38,17 @@ const columns = [
       ),
   },
 ];
-const data = [
-  {
-    id: 1,
-    nombre_afectacion: "Afectacion1",
-    descripcion: "ejemplo",
-    estado: 1
-  },
-];
+
 
 const ListaAfectacion = () => {
+
+  const [listaAfectacion, setListaAfectacion] = useState([]);
+
   const [modalEliminar, setModalEliminar] = useState(false);
   const [modalInsertar, setModalInsertar] = useState(false);
   const [modalEditar, setModalEditar] = useState(false);
   const [afectacionSeleccionado, setAfectacionSeleccionado] = useState({
-    id: 1,
+    id: 0,
     nombre_afectacion: "",
     decripcion: "",
     estado: 1,
@@ -77,6 +76,28 @@ const ListaAfectacion = () => {
     setModalEditar(!modalEditar);
   };
 
+  useEffect(() => {
+    const abortController = new AbortController();
+    //LISTAR ARTICULOS
+    const listaAfectacion = async () => {
+      try {
+        let response = await fetch(`${URL}/listaAfectacion`, {
+          signal: abortController.signal,
+        });
+        response = await response.json();
+        setListaAfectacion(response.data);
+      } catch (error) {
+        console.log(error);
+        if (abortController.signal.aborted) {
+          console.log(abortController.signal.aborted);
+        } else throw error;
+      }
+    };
+
+    listaAfectacion();
+    return () => abortController.abort();
+  }, []);
+
   return (
     <>
       <Navbar nombre="Afectación">
@@ -92,12 +113,18 @@ const ListaAfectacion = () => {
                 <i className="fas fa-plus-circle "></i> Nueva Afectación
               </button>
             </div>
+            <div className="col-auto">
+            {" "}
+              <Link to="/actividades" type="button" className="btn btn-secondary btn-sm">
+                <i class="fas fa-arrow-left"></i> Regresar
+              </Link>
+            </div>
           </div>
           <div className="row my-4">
             <div className="col">
               <MaterialTable
                 columns={columns}
-                data={data}
+                data={listaAfectacion}
                 title="Lista de Afectaciones"
                 actions={[
                   {

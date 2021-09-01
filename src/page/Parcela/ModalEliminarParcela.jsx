@@ -7,21 +7,21 @@ import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
 import URL from "../../configuration/URL";
 
-const ModalEliminarLabor = ({
-  laborSeleccionado,
+const ModalEliminarParcela = ({
+  parcelaSeleccionado,
   modalEliminar,
   abrirCerrarModalEliminar,
-  listaLabor,
-  setListaLabor
+  listaParcela,
+  setListaParcela
  
 }) => {
- 
-  const eliminarLabor = async () => {
 
-    await axios.delete(`${URL}/eliminarTipoLabor/` + laborSeleccionado.id)
+  const eliminarParcela = async () => {
+
+    await axios.delete(`${URL}/eliminarParcela/` + parcelaSeleccionado.id)
       .then((response) => {
-        setListaLabor(
-          listaLabor.filter((labor) => labor.id !== laborSeleccionado.id)
+        setListaParcela(
+          listaParcela.filter((parcela) => parcela.id !== parcelaSeleccionado.id)
         );
         Alerta.fire({
           icon: "success",
@@ -37,15 +37,15 @@ const ModalEliminarLabor = ({
   return (
     <Modal open={modalEliminar} close={abrirCerrarModalEliminar}>
       <p>
-        Está seguro que desea eliminar el labor{" "}
-        <b>{laborSeleccionado.nombre}</b>?{" "}
+        Está seguro que desea eliminar el parcela{" "}
+        <b>{parcelaSeleccionado.numero}</b>?{" "}
       </p>
       <div align="right">
         <Button
           size="small" 
           variant="contained"
           color="primary"
-          onClick={() => eliminarLabor()}
+          onClick={() => eliminarParcela()}
         >
           <DeleteIcon /> Eliminar{" "}
         </Button>{" "}
@@ -62,4 +62,4 @@ const ModalEliminarLabor = ({
   );
 };
 
-export default ModalEliminarLabor;
+export default ModalEliminarParcela;

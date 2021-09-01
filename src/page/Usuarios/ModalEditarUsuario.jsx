@@ -10,42 +10,64 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ModalEditarAfectacion = ({
+const ModalEditarUsuario = ({
   modalEditar,
   abrirCerrarModalEditar,
-  afectacionSeleccionado,
-  setAfectacionSeleccionado,
+  usuarioSeleccionado,
+  setUsuarioSeleccionado,
 
 }) => {
   
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setAfectacionSeleccionado((prevState) => ({
+    setUsuarioSeleccionado((prevState) => ({
       ...prevState,
       [name]: value,
     }));
   };
   const styles = useStyles();
 
-  
-
   return (
     <Modal open={modalEditar} close={abrirCerrarModalEditar}>
-      <h3>Editar Afectación</h3>
+      <h3>Editar Usuario</h3>
       <TextField
         className={styles.inputMaterial}
-        label="Nombre"
-        name="nombre_afectacion"
-        value={afectacionSeleccionado.nombre_afectacion}
+        label="Usuario"
+        name="usuario"
         onChange={handleChange}
+        value={usuarioSeleccionado.usuario}
       />
       <br />
       <TextField
         className={styles.inputMaterial}
-        label="Descripción"
-        name="descripcion"
-        value={afectacionSeleccionado.descripcion}
+        label="Contraseña"
+        name="password"
         onChange={handleChange}
+        value={usuarioSeleccionado.password}
+      />
+      <br />
+      <TextField
+        className={styles.inputMaterial}
+        label="Nombre"
+        name="nombre"
+        onChange={handleChange}
+        value={usuarioSeleccionado.nombre}
+      />
+      <br />
+      <TextField
+        className={styles.inputMaterial}
+        label="Apellido"
+        name="apellido"
+        onChange={handleChange}
+        value={usuarioSeleccionado.apellido}
+      />
+      <br />
+      <TextField
+        className={styles.inputMaterial}
+        label="Cédula"
+        name="cedula"
+        onChange={handleChange}
+        value={usuarioSeleccionado.cedula}
       />
       <br />
       <br />
@@ -74,4 +96,4 @@ const ModalEditarAfectacion = ({
   );
 };
 
-export default ModalEditarAfectacion;
+export default ModalEditarUsuario;

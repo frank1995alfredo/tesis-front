@@ -13,29 +13,30 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ModalAgregarLabor = ({
+const ModalAgregarParcela = ({
   modalInsertar,
   abrirCerrarModalInsertar,
-  setLaborSeleccionado,
-  laborSeleccionado,
-  listaLabor,
-  setListaLabor
+  setParcelaSeleccionado,
+  parcelaSeleccionado,
+  listaParcela,
+  setListaParcela
+
 }) => {
   const styles = useStyles();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setLaborSeleccionado((prevState) => ({
+    setParcelaSeleccionado((prevState) => ({
       ...prevState,
       [name]: value,
     }));
   };
 
-  const agregarLabor = async () => {
+  const agregarParcela = async () => {
     await axios
-      .post(`${URL}/crearTipoLabor`, laborSeleccionado)
+      .post(`${URL}/crearParcela`, parcelaSeleccionado)
       .then((response) => {
-        setListaLabor(listaLabor.concat(response.data.data[0]));
+        setListaParcela(listaParcela.concat(response.data.data[0]));
         Alerta.fire({
           icon: "success",
           title: "Registro agregado.",
@@ -47,14 +48,29 @@ const ModalAgregarLabor = ({
       });
   };
 
-
   return (
     <Modal open={modalInsertar} close={abrirCerrarModalInsertar}>
-      <h3>Nueva Labor</h3>
+      <h3>Nuevo Parcela</h3>
       <TextField
         className={styles.inputMaterial}
-        label="Nombre"
-        name="nombre"
+        label="Numero"
+        name="numero"
+        onChange={handleChange}
+      />
+      
+      <br />
+      <TextField
+        className={styles.inputMaterial}
+        label="Extencion"
+        name="extencion"
+        onChange={handleChange}
+      />
+      
+      <br />
+      <TextField
+        className={styles.inputMaterial}
+        label="Descripcion"
+        name="descripcion"
         onChange={handleChange}
       />
       
@@ -65,7 +81,7 @@ const ModalAgregarLabor = ({
           variant="contained"
           color="primary"
           size="small"
-          onClick={() => agregarLabor()}
+          onClick={() => agregarParcela()}
         >
           {" "}
           <AddCircleIcon />
@@ -85,4 +101,4 @@ const ModalAgregarLabor = ({
   );
 };
 
-export default ModalAgregarLabor;
+export default ModalAgregarParcela;

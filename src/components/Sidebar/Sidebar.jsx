@@ -1,12 +1,12 @@
 import Wrapper from "../Wrapper/Wrapper";
 import { Link } from "react-router-dom";
 
-const Sidebar = ({ children }) => {
-  return (
+const Sidebar = ({ children }) => (
+
     <Wrapper>
       <div className="bg-white" id="sidebar-wrapper">
         <div className="sidebar-heading text-center py-4 primary-text fs-4 fw-bold text-uppercase border-bottom">
-          <i className="fas fa-user-secret me-2"></i>Codersbite
+          <i className="fas fa-user-secret me-2"></i>SisArroz
         </div>
         <div className="list-group list-group-flush my-3">
           <Link
@@ -30,7 +30,7 @@ const Sidebar = ({ children }) => {
             <i className="fas fa-users me-2"></i> Bodega
           </Link>
           <Link
-            to="/proveedores"
+            to="/usuarios"
             className="list-group-item list-group-item-action bg-transparent second-text fw-bold"
           >
             <i className="fas fa-users me-2"></i> Usuarios
@@ -41,6 +41,6 @@ const Sidebar = ({ children }) => {
       {children}
     </Wrapper>
   );
-};
+
 
 export default Sidebar;

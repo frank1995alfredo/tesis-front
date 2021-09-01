@@ -13,37 +13,37 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ModalEditarLabor = ({
+const ModalEditarParcela = ({
   modalEditar,
   abrirCerrarModalEditar,
-  laborSeleccionado,
-  setLaborSeleccionado,
-  listaLabor,
-  setListaLabor
+  parcelaSeleccionado,
+  setParcelaSeleccionado,
+  listaParcela,
+  setListaParcela
 
 }) => {
   
-
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setLaborSeleccionado((prevState) => ({
+    setParcelaSeleccionado((prevState) => ({
       ...prevState,
       [name]: value,
     }));
   };
   const styles = useStyles();
 
-
-  const editarLabor = async() => {
-    await axios.put(`${URL}/editarTipoLabor/`+ laborSeleccionado.id, laborSeleccionado)
+  const editarParcela = async() => {
+    await axios.put(`${URL}/editarParcela/`+ parcelaSeleccionado.id, parcelaSeleccionado)
     .then(response => {
-      let laborNuevo = listaLabor;
-      laborNuevo.map(labor => {
-        if(labor.id === laborSeleccionado.id) {
-          labor.nombre = laborSeleccionado.nombre;
+      let parcelaNuevo = listaParcela;
+      parcelaNuevo.map(parcela => {
+        if(parcela.id === parcelaSeleccionado.id) {
+          parcela.numero = parcelaSeleccionado.numero;
+          parcela.extencion = parcelaSeleccionado.extencion;
+          parcela.descripcion = parcelaSeleccionado.descripcion;
         }
       });
-      setListaLabor(laborNuevo);
+      setListaParcela(parcelaNuevo);
       Alerta.fire({
         icon: "success",
         title: "Registro editado.",
@@ -54,15 +54,30 @@ const ModalEditarLabor = ({
     })
   }
 
-
   return (
     <Modal open={modalEditar} close={abrirCerrarModalEditar}>
-      <h3>Editar Labor</h3>
+      <h3>Editar Parcela</h3>
       <TextField
         className={styles.inputMaterial}
-        label="Nombre"
-        name="nombre"
-        value={laborSeleccionado.nombre}
+        label="Numero"
+        name="numero"
+        value={parcelaSeleccionado.numero}
+        onChange={handleChange}
+      />
+      <br />
+      <TextField
+        className={styles.inputMaterial}
+        label="Extencion"
+        name="extencion"
+        value={parcelaSeleccionado.extencion}
+        onChange={handleChange}
+      />
+      <br />
+      <TextField
+        className={styles.inputMaterial}
+        label="Descripcion"
+        name="descripcion"
+        value={parcelaSeleccionado.descripcion}
         onChange={handleChange}
       />
       <br />
@@ -72,7 +87,7 @@ const ModalEditarLabor = ({
           variant="contained"
           color="primary"
           size="small"
-          onClick={() => editarLabor()}
+          onClick={() => editarParcela()}
         >
           {" "}
           <EditIcon/>
@@ -92,4 +107,4 @@ const ModalEditarLabor = ({
   );
 };
 
-export default ModalEditarLabor;
+export default ModalEditarParcela;
