@@ -3,6 +3,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import Modal from "../../components/Modals/Modal";
 import CancelIcon from "@material-ui/icons/Cancel";
 import EditIcon from '@material-ui/icons/Edit';
+import URL from "../../configuration/URL";
+import axios from "axios";
+import Alerta from "../../components/Alerts/Alerta";
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -15,6 +18,8 @@ const ModalEditarAfectacion = ({
   abrirCerrarModalEditar,
   afectacionSeleccionado,
   setAfectacionSeleccionado,
+  listaAfectacion,
+  setListaAfectacion
 
 }) => {
   
@@ -27,7 +32,26 @@ const ModalEditarAfectacion = ({
   };
   const styles = useStyles();
 
-  
+  const editarAfectacion = async() => {
+    await axios.put(`${URL}/editarAfectacion/`+ afectacionSeleccionado.id, afectacionSeleccionado)
+    .then(response => {
+      let afectacionNuevo = listaAfectacion;
+      afectacionNuevo.map(afectacion => {
+        if(afectacion.id === afectacionSeleccionado.id) {
+          afectacion.nombre_afectacion = afectacionSeleccionado.nombre_afectacion;
+          afectacion.descripcion = afectacionSeleccionado.descripcion;
+        }
+      });
+      setListaAfectacion(afectacionNuevo);
+      Alerta.fire({
+        icon: "success",
+        title: "Registro editado.",
+      });
+      abrirCerrarModalEditar();
+    }).catch(error => {
+      console.log(error);
+    })
+  }  
 
   return (
     <Modal open={modalEditar} close={abrirCerrarModalEditar}>
@@ -54,7 +78,7 @@ const ModalEditarAfectacion = ({
           variant="contained"
           color="primary"
           size="small"
-          //onClick={() => editarCategoria()}
+          onClick={() => editarAfectacion()}
         >
           {" "}
           <EditIcon/>

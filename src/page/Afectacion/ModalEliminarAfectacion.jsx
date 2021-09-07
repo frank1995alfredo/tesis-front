@@ -3,13 +3,36 @@ import { Button } from "@material-ui/core";
 import Modal from "../../components/Modals/Modal";
 import DeleteIcon from "@material-ui/icons/Delete";
 import CancelIcon from "@material-ui/icons/Cancel";
+import axios from "axios";
+import Alerta from "../../components/Alerts/Alerta";
+import URL from "../../configuration/URL";
 
 const ModalEliminarAfectacion = ({
   afectacionSeleccionado,
   modalEliminar,
   abrirCerrarModalEliminar,
+  listaAfectacion,
+  setListaAfectacion
  
 }) => {
+
+  const eliminarAfectacion = async () => {
+
+    await axios.delete(`${URL}/eliminarAfectacion/` + afectacionSeleccionado.id)
+      .then((response) => {
+        setListaAfectacion(
+          listaAfectacion.filter((afectacion) => afectacion.id !== afectacionSeleccionado.id)
+        );
+        Alerta.fire({
+          icon: "success",
+          title: "Registro eliminado.",
+        });
+        abrirCerrarModalEliminar();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   return (
     <Modal open={modalEliminar} close={abrirCerrarModalEliminar}>
@@ -22,7 +45,7 @@ const ModalEliminarAfectacion = ({
           size="small" 
           variant="contained"
           color="primary"
-         // onClick={() => eliminarCliente()}
+          onClick={() => eliminarAfectacion()}
         >
           <DeleteIcon /> Eliminar{" "}
         </Button>{" "}

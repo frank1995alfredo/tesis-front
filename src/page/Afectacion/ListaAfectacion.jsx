@@ -51,7 +51,7 @@ const ListaAfectacion = () => {
     id: 0,
     nombre_afectacion: "",
     decripcion: "",
-    estado: 1,
+    
   });
 
   const seleccionarAfectacion = (afectacion, caso) => {
@@ -158,17 +158,24 @@ const ListaAfectacion = () => {
         afectacionSeleccionado={afectacionSeleccionado}
         abrirCerrarModalInsertar={abrirCerrarModalInsertar}
         modalInsertar={modalInsertar}
+        listaAfectacion={listaAfectacion}
+        setListaAfectacion={setListaAfectacion}
       />
       <ModalEliminarAfectacion
         afectacionSeleccionado={afectacionSeleccionado}
         abrirCerrarModalEliminar={abrirCerrarModalEliminar}
         modalEliminar={modalEliminar}
+        listaAfectacion={listaAfectacion}
+        setListaAfectacion={setListaAfectacion}
+       
       />
       <ModalEditarAfectacion
-        setLaborSeleccionado={setAfectacionSeleccionado}
+        setAfectacionSeleccionado={setAfectacionSeleccionado}
         afectacionSeleccionado={afectacionSeleccionado}
         abrirCerrarModalEditar={abrirCerrarModalEditar}
         modalEditar={modalEditar}
+        listaAfectacion={listaAfectacion}
+        setListaAfectacion={setListaAfectacion}
       />
     </>
   );

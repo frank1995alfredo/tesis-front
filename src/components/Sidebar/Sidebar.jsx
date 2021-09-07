@@ -24,7 +24,7 @@ const Sidebar = ({ children }) => (
           </Link>
 
           <Link
-            to="/clientes"
+            to="/bodega"
             className="list-group-item list-group-item-action bg-transparent second-text fw-bold"
           >
             <i className="fas fa-users me-2"></i> Bodega

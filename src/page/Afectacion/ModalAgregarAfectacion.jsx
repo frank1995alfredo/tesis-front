@@ -3,6 +3,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import Modal from "../../components/Modals/Modal";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import CancelIcon from "@material-ui/icons/Cancel";
+import URL from "../../configuration/URL";
+import axios from "axios";
+import Alerta from "../../components/Alerts/Alerta";
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -14,7 +17,9 @@ const ModalAgregarAfectacion = ({
   modalInsertar,
   abrirCerrarModalInsertar,
   setAfectacionSeleccionado,
-
+  afectacionSeleccionado,
+  listaAfectacion,
+  setListaAfectacion
 }) => {
   const styles = useStyles();
 
@@ -26,6 +31,21 @@ const ModalAgregarAfectacion = ({
     }));
   };
 
+  const agregarAfectacion = async () => {
+    await axios
+      .post(`${URL}/crearAfectacion`, afectacionSeleccionado)
+      .then((response) => {
+        setListaAfectacion(listaAfectacion.concat(response.data.data[0]));
+        Alerta.fire({
+          icon: "success",
+          title: "Registro agregado.",
+        });
+        abrirCerrarModalInsertar();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   return (
     <Modal open={modalInsertar} close={abrirCerrarModalInsertar}>
@@ -50,7 +70,7 @@ const ModalAgregarAfectacion = ({
           variant="contained"
           color="primary"
           size="small"
-         // onClick={() => agregarCategoria()}
+          onClick={() => agregarAfectacion()}
         >
           {" "}
           <AddCircleIcon />

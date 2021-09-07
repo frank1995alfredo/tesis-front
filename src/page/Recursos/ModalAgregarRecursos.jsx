@@ -3,6 +3,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import Modal from "../../components/Modals/Modal";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import CancelIcon from "@material-ui/icons/Cancel";
+import URL from "../../configuration/URL";
+import axios from "axios";
+import Alerta from "../../components/Alerts/Alerta";
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -14,7 +17,9 @@ const ModalAgregarRecursos = ({
   modalInsertar,
   abrirCerrarModalInsertar,
   setRecursosSeleccionado,
-
+  recursosSeleccionado,
+  listaRecurso,
+  setListaRecurso
 }) => {
   const styles = useStyles();
 
@@ -24,6 +29,22 @@ const ModalAgregarRecursos = ({
       ...prevState,
       [name]: value,
     }));
+  };
+
+  const agregarRecurso = async () => {
+    await axios
+      .post(`${URL}/crearRecurso`, recursosSeleccionado)
+      .then((response) => {
+        setListaRecurso(listaRecurso.concat(response.data.data[0]));
+        Alerta.fire({
+          icon: "success",
+          title: "Registro agregado.",
+        });
+        abrirCerrarModalInsertar();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
 
@@ -43,7 +64,7 @@ const ModalAgregarRecursos = ({
       <TextField
         className={styles.inputMaterial}
         label="Descripcion"
-        name="descripcion"
+        name="caracteristica"
         onChange={handleChange}
       />
       
@@ -54,7 +75,7 @@ const ModalAgregarRecursos = ({
           variant="contained"
           color="primary"
           size="small"
-         // onClick={() => agregarCategoria()}
+          onClick={() => agregarRecurso()}
         >
           {" "}
           <AddCircleIcon />

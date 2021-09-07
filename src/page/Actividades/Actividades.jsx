@@ -1,4 +1,3 @@
-
 import Navbar from "../../components/Navbar/Navbar";
 
 import { Link } from "react-router-dom";
@@ -29,7 +28,7 @@ const Actividades = () => {
             <div class="p-3 bg-white shadow-sm d-flex justify-content-around align-items-center rounded">
               <div>
                 <Link
-                  to="/"
+                  to="/actividades/actividades"
                   className="list-group-item list-group-item-action bg-transparent second-text active"
                 >
                   <p className="text-center">Actividades</p>

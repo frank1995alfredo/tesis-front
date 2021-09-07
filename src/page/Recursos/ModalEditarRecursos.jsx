@@ -3,6 +3,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import Modal from "../../components/Modals/Modal";
 import CancelIcon from "@material-ui/icons/Cancel";
 import EditIcon from '@material-ui/icons/Edit';
+import URL from "../../configuration/URL";
+import axios from "axios";
+import Alerta from "../../components/Alerts/Alerta";
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -15,6 +18,8 @@ const ModalEditarRecursos = ({
   abrirCerrarModalEditar,
   recursosSeleccionado,
   setRecursosSeleccionado,
+  listaRecurso,
+  setListaRecurso
 
 }) => {
   
@@ -26,6 +31,29 @@ const ModalEditarRecursos = ({
     }));
   };
   const styles = useStyles();
+ 
+  
+  const editarRecurso = async() => {
+    await axios.put(`${URL}/editarRecurso/`+ recursosSeleccionado.id, recursosSeleccionado)
+    .then(response => {
+      let recursoNuevo = listaRecurso;
+      recursoNuevo.map(recurso => {
+        if(recurso.id === recursosSeleccionado.id) {
+          recurso.nombre = recursosSeleccionado.nombre;
+          recurso.caracteristica = recursosSeleccionado.caracteristica;
+        }
+      });
+      setListaRecurso(recursoNuevo);
+      Alerta.fire({
+        icon: "success",
+        title: "Registro editado.",
+      });
+      abrirCerrarModalEditar();
+    }).catch(error => {
+      console.log(error);
+    })
+  }  
+
 
   return (
     <Modal open={modalEditar} close={abrirCerrarModalEditar}>
@@ -40,8 +68,8 @@ const ModalEditarRecursos = ({
       <TextField
         className={styles.inputMaterial}
         label="Descripcion"
-        name="descripcion"
-        value={recursosSeleccionado.nombre}
+        name="caracteristica"
+        value={recursosSeleccionado.caracteristica}
         onChange={handleChange}
       />
       <br />
@@ -51,7 +79,7 @@ const ModalEditarRecursos = ({
           variant="contained"
           color="primary"
           size="small"
-          //onClick={() => editarCategoria()}
+          onClick={() => editarRecurso()}
         >
           {" "}
           <EditIcon/>
