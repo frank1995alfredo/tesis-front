@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const FormAgregarActividad = () => {
+const FormEditarActividad = () => {
   const initialFormState = {
     id: null,
     idtipolabor: "",
@@ -188,8 +188,8 @@ const FormAgregarActividad = () => {
                           name="idtipolabor"
                           onChange={handleInputChange}
                         >
-                          <MenuItem value="labor 1">1</MenuItem>
-                          <MenuItem value="labor 2">2</MenuItem>
+                          <MenuItem value="parcela 1">1</MenuItem>
+                          <MenuItem value="parcela 2">2</MenuItem>
                         </Select>
                       </FormControl>
                     </Grid>
@@ -201,7 +201,7 @@ const FormAgregarActividad = () => {
                         <Select
                           labelId="demo-simple-select-label"
                           id="demo-simple-select"
-                          name="idparcela_1"
+                          name="idparcela"
                           onChange={handleInputChange}
                         >
                           <MenuItem value="parcela 1">1</MenuItem>
@@ -316,4 +316,4 @@ const FormAgregarActividad = () => {
   );
 };
 
-export default FormAgregarActividad;
+export default FormEditarActividad;

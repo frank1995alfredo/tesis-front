@@ -13,7 +13,7 @@ const columns = [
     render: (rowData) => rowData.tableData.id + 1,
   },
   {
-    title: "nombre",
+    title: "Nombre",
     field: "nombre",
   },
   {
@@ -59,7 +59,8 @@ const ListaRecursos = () => {
 
   useEffect(() => {
     const abortController = new AbortController();
-    //LISTAR ARTICULOS
+
+    //LISTAR RECURSO
     const listaAfectacion = async () => {
       try {
         let response = await fetch(`${URL}/listaRecurso`, {
@@ -110,16 +111,16 @@ const ListaRecursos = () => {
                 actions={[
                   {
                     icon: "edit",
-                    tooltip: "Editar Recursos",
+                    tooltip: "Editar Recurso",
                     onClick: (event, rowData) =>
                       seleccionarRecursos(rowData, "Editar"),
                   },
                   {
                     icon: "delete",
-                    tooltip: "Eliminar Recursos",
+                    tooltip: "Eliminar Recurso",
                     onClick: (event, rowData) =>
                       seleccionarRecursos(rowData, "Eliminar"),
-                  },
+                  }
                 ]}
                 options={{
                   actionsColumnIndex: -1,
@@ -128,6 +129,17 @@ const ListaRecursos = () => {
                   header: {
                     actions: "Acciones",
                   },
+                  toolbar: {
+                    searchTooltip: 'Buscar',
+                    searchPlaceholder: 'Buscar'
+                  },
+                  pagination: {
+                    labelRowsSelect: 'Registros',
+                    firstTooltip: 'Primera página',
+                    previousTooltip: 'Página anterior',
+                    nextTooltip: 'Siguiente página',
+                    lastTooltip: 'Última página',
+                  }
                 }}
               />
             </div>

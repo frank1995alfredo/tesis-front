@@ -64,7 +64,8 @@ const ListaParcela = () => {
 
   useEffect(() => {
     const abortController = new AbortController();
-    //LISTAR ARTICULOS
+
+    //LISTAR PARCELA
     const listaParcelas = async () => {
       try {
         let response = await fetch(`${URL}/listaParcela`, {
@@ -133,6 +134,17 @@ const ListaParcela = () => {
                   header: {
                     actions: "Acciones",
                   },
+                  toolbar: {
+                    searchTooltip: 'Buscar',
+                    searchPlaceholder: 'Buscar'
+                  },
+                  pagination: {
+                    labelRowsSelect: 'Registros',
+                    firstTooltip: 'Primera página',
+                    previousTooltip: 'Página anterior',
+                    nextTooltip: 'Siguiente página',
+                    lastTooltip: 'Última página',
+                  }
                 }}
               />
             </div>

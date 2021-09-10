@@ -78,7 +78,8 @@ const ListaAfectacion = () => {
 
   useEffect(() => {
     const abortController = new AbortController();
-    //LISTAR ARTICULOS
+    
+    //LISTAR AFECTACION
     const listaAfectacion = async () => {
       try {
         let response = await fetch(`${URL}/listaAfectacion`, {
@@ -147,6 +148,17 @@ const ListaAfectacion = () => {
                   header: {
                     actions: "Acciones",
                   },
+                  toolbar: {
+                    searchTooltip: 'Buscar',
+                    searchPlaceholder: 'Buscar'
+                  },
+                  pagination: {
+                    labelRowsSelect: 'Registros',
+                    firstTooltip: 'Primera página',
+                    previousTooltip: 'Página anterior',
+                    nextTooltip: 'Siguiente página',
+                    lastTooltip: 'Última página',
+                  }
                 }}
               />
             </div>

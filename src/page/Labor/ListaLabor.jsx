@@ -7,7 +7,6 @@ import ModalEditarLabor from "./ModalEditarLabor";
 import { Link } from "react-router-dom";
 import URL from "../../configuration/URL";
 
-
 const columns = [
   {
     title: "#",
@@ -18,7 +17,6 @@ const columns = [
     field: "nombre",
   },
 ];
-
 
 
 const ListaLabor = () => {
@@ -58,7 +56,8 @@ const ListaLabor = () => {
 
   useEffect(() => {
     const abortController = new AbortController();
-    //LISTAR ARTICULOS
+
+    //LISTAR LABORES
     const listaLabores = async () => {
       try {
         let response = await fetch(`${URL}/listaTipoLabor`, {
@@ -127,6 +126,17 @@ const ListaLabor = () => {
                   header: {
                     actions: "Acciones",
                   },
+                  toolbar: {
+                    searchTooltip: 'Buscar',
+                    searchPlaceholder: 'Buscar'
+                  },
+                  pagination: {
+                    labelRowsSelect: 'Registros',
+                    firstTooltip: 'Primera página',
+                    previousTooltip: 'Página anterior',
+                    nextTooltip: 'Siguiente página',
+                    lastTooltip: 'Última página',
+                  }
                 }}
               />
             </div>

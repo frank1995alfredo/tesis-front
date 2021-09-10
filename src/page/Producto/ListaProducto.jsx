@@ -126,6 +126,17 @@ const ListaProducto = () => {
                   header: {
                     actions: "Acciones",
                   },
+                  toolbar: {
+                    searchTooltip: 'Buscar',
+                    searchPlaceholder: 'Buscar'
+                  },
+                  pagination: {
+                    labelRowsSelect: 'Registros',
+                    firstTooltip: 'Primera página',
+                    previousTooltip: 'Página anterior',
+                    nextTooltip: 'Siguiente página',
+                    lastTooltip: 'Última página',
+                  }
                 }}
               />
             </div>
