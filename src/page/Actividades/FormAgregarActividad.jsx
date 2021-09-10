@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar/Navbar";
 import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
@@ -8,7 +8,7 @@ import TextField from "@material-ui/core/TextField";
 import CancelIcon from "@material-ui/icons/Cancel";
 import FormControl from "@material-ui/core/FormControl";
 import Input from "@material-ui/core/Input";
-import NumberFormat from 'react-number-format';
+import NumberFormat from "react-number-format";
 
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -57,6 +57,9 @@ const FormAgregarActividad = () => {
     },
   }));
   const [agregarActividad, setAgregarActividad] = useState(initialFormState);
+  const [listaParcela, setListaParcela] = useState([]);
+  const [listaRecurso, setListaRecurso] = useState([]);
+  const [listaLabor, setListaLabor] = useState([]);
 
   const history = useHistory();
   const cancelar = () => {
@@ -69,9 +72,68 @@ const FormAgregarActividad = () => {
     console.log(agregarActividad);
   };
 
+  //LISTAS
+  useEffect(() => {
+    const abortController = new AbortController();
+
+    const listaLabores = async () => {
+      try {
+        let response = await fetch(`${URL}/listaLabores`, {
+          signal: abortController.signal,
+        });
+        response = await response.json();
+        setListaLabor(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.log(error);
+        if (abortController.signal.aborted) {
+          console.log(abortController.signal.aborted);
+        } else throw error;
+      }
+    };
+
+    const listaParcela = async () => {
+      try {
+        let response = await fetch(`${URL}/listaParcelas`, {
+          signal: abortController.signal,
+        });
+        response = await response.json();
+        setListaParcela(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.log(error);
+        if (abortController.signal.aborted) {
+          console.log(abortController.signal.aborted);
+        } else throw error;
+      }
+    };
+
+    const listaRecurso = async () => {
+      try {
+        let response = await fetch(`${URL}/listaRecursos`, {
+          signal: abortController.signal,
+        });
+        response = await response.json();
+        setListaRecurso(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.log(error);
+        if (abortController.signal.aborted) {
+          console.log(abortController.signal.aborted);
+        } else throw error;
+      }
+    };
+
+    listaLabores();
+    listaParcela();
+    listaRecurso();
+
+    return () => abortController.abort();
+  }, []);
+
   const peticionAgregar = async () => {
     await axios
-      .post(`${URL}/agregarActividad`, agregarActividad)
+      .post(`${URL}/crearActividad`, agregarActividad)
       .then((response) => {
         setAgregarActividad(initialFormState);
         Alerta.fire({
@@ -125,10 +187,9 @@ const FormAgregarActividad = () => {
     inputRef: PropTypes.func.isRequired,
   };
 
-
   function NumberFormatCustom(props) {
     const { inputRef, onChange, ...other } = props;
-  
+
     return (
       <NumberFormat
         {...other}
@@ -153,7 +214,6 @@ const FormAgregarActividad = () => {
     name: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
   };
-  
 
   const classesSelect = select();
   return (
@@ -188,8 +248,11 @@ const FormAgregarActividad = () => {
                           name="idtipolabor"
                           onChange={handleInputChange}
                         >
-                          <MenuItem value="labor 1">1</MenuItem>
-                          <MenuItem value="labor 2">2</MenuItem>
+                          {listaLabor.map((labor, index) => (
+                            <MenuItem key={index} value={labor.id}>
+                              {labor.nombre}
+                            </MenuItem>
+                          ))}
                         </Select>
                       </FormControl>
                     </Grid>
@@ -204,8 +267,11 @@ const FormAgregarActividad = () => {
                           name="idparcela_1"
                           onChange={handleInputChange}
                         >
-                          <MenuItem value="parcela 1">1</MenuItem>
-                          <MenuItem value="parcela 2">2</MenuItem>
+                          {listaParcela.map((parcela, index) => (
+                            <MenuItem key={index} value={parcela.id}>
+                              {parcela.numero}
+                            </MenuItem>
+                          ))}
                         </Select>
                       </FormControl>
                     </Grid>
@@ -273,8 +339,11 @@ const FormAgregarActividad = () => {
                           name="idrecurso"
                           onChange={handleInputChange}
                         >
-                          <MenuItem value="recurso 1">Recurso 1</MenuItem>
-                          <MenuItem value="recurso 2">Recurso 2</MenuItem>
+                          {listaRecurso.map((recurso, index) => (
+                            <MenuItem key={index} value={recurso.id}>
+                              {recurso.nombre}
+                            </MenuItem>
+                          ))}
                         </Select>
                       </FormControl>
                     </Grid>
@@ -284,6 +353,15 @@ const FormAgregarActividad = () => {
                         pattern="[0-9]{0,13}"
                         onChange={handleInputChange}
                         name="cantidad"
+                        id="formatted-numberformat-input"
+                      />
+                    </Grid>
+                    <Grid item xs={12} lg={2} sm={3}>
+                      <TextField
+                        label="Costo"
+                        pattern="[0-9]{0,13}"
+                        onChange={handleInputChange}
+                        name="costo"
                         id="formatted-numberformat-input"
                       />
                     </Grid>

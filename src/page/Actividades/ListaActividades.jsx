@@ -22,7 +22,7 @@ const columns = [
   },
   {
     title: "Recurso",
-    field: "nombre_recurso",
+    field: "recurso",
   },
   {
     title: "Fecha Inicio",
@@ -40,6 +40,20 @@ const columns = [
     title: "Total",
     field: "total_actividad",
   },
+  {
+    title: "Estado",
+    render: (rowData) =>
+      rowData.estado === 1 ? (
+        <Chip
+          variant="outlined"
+          style={{ backgroundColor: green[500] }}
+          label="Activo"
+          size="small"
+        />
+      ) : (
+        ""
+      ),
+  }, 
 ];
 
 const data = [
@@ -52,6 +66,7 @@ const data = [
     fecha_fin: "2021-12-08",
     avance: "25%",
     total_actividad: 280.95,
+    estado: 1
   },
 ];
 
@@ -83,6 +98,29 @@ const ListaActividades = () => {
     setModalEliminar(!modalEliminar);
   };
 
+  useEffect(() => {
+    const abortController = new AbortController();
+    
+    //LISTAR AFECTACION
+    const listaActividad = async () => {
+      try {
+        let response = await fetch(`${URL}/listaActividad`, {
+          signal: abortController.signal,
+        });
+        response = await response.json();
+        setListaActividad(response.data);
+      } catch (error) {
+        console.log(error);
+        if (abortController.signal.aborted) {
+          console.log(abortController.signal.aborted);
+        } else throw error;
+      }
+    };
+
+    listaActividad();
+    return () => abortController.abort();
+  }, []);
+
  
   return (
     <>
@@ -112,7 +150,7 @@ const ListaActividades = () => {
             <div className="col">
               <MaterialTable
                 columns={columns}
-                data={data}
+                data={listaActividad}
                 title="Lista de Actividades"
                 actions={[
                   {
