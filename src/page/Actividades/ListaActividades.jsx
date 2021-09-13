@@ -6,6 +6,7 @@ import ModalEliminarActividad from "./ModalEliminarActividad";
 import Chip from "@material-ui/core/Chip";
 import { Link } from "react-router-dom";
 import URL from "../../configuration/URL";
+import { useHistory } from "react-router-dom";
 
 const columns = [
   {
@@ -56,19 +57,7 @@ const columns = [
   }, 
 ];
 
-const data = [
-  {
-    id: 1,
-    nombre: "nuevo",
-    numero: 4,
-    nombre_recurso: "recurso nuevo",
-    fecha_inicio: "2021-09-05",
-    fecha_fin: "2021-12-08",
-    avance: "25%",
-    total_actividad: 280.95,
-    estado: 1
-  },
-];
+
 
 const ListaActividades = () => {
   const [listaActividad, setListaActividad] = useState([]);
@@ -107,7 +96,9 @@ const ListaActividades = () => {
         let response = await fetch(`${URL}/listaActividad`, {
           signal: abortController.signal,
         });
+        
         response = await response.json();
+       
         setListaActividad(response.data);
       } catch (error) {
         console.log(error);
@@ -115,12 +106,20 @@ const ListaActividades = () => {
           console.log(abortController.signal.aborted);
         } else throw error;
       }
+     
     };
+   
 
     listaActividad();
     return () => abortController.abort();
   }, []);
 
+
+  //metodo para editar
+  const history = useHistory();
+  const handleUpdateClick = (id) => {
+    history.push(`/actividades/actividades/${id}/editarActividad`);
+  };
  
   return (
     <>
@@ -157,7 +156,7 @@ const ListaActividades = () => {
                     icon: "edit",
                     tooltip: "Editar Actividad",
                     onClick: (event, rowData) =>
-                      seleccionarActividad(rowData, "Editar"),
+                      handleUpdateClick(rowData.id),
                   },
                   {
                     icon: "delete",

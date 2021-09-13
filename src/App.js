@@ -17,6 +17,7 @@ import ListaRecursos from "./page/Recursos/ListaRecursos"
 import ListaParcela from "./page/Parcela/ListaParcela";
 import Bodega from "./page/Bodega/Bodega";
 import FormAgregarActividad from "./page/Actividades/FormAgregarActividad"
+import FormEditarActividad from "./page/Actividades/FormEditarActividad"
 
 function App() {
   
@@ -29,6 +30,7 @@ function App() {
         <Route exact path="/actividades/afectaciones" component={ ListaAfectacion }/>
         <Route exact path="/actividades/actividades" component={ ListaActividades }/>
         <Route exact path="/actividades/actividades/agregarActividad" component={ FormAgregarActividad }/>
+        <Route exact path="/actividades/actividades/:id/editarActividad" component={ FormEditarActividad }/>
         <Route exact path="/actividades" component={ Actividades }/>
        
 

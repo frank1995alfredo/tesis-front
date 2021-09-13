@@ -51,7 +51,7 @@ const ListaProducto = () => {
   const [modalInsertar, setModalInsertar] = useState(false);
   const [modalEditar, setModalEditar] = useState(false);
   const [productoSeleccionado, setProductoSeleccionado] = useState({
-    id: 1,
+    id: 0,
     nombre: "",
     fecha_compra: "",
     fecha_caducidad: "",

@@ -36,8 +36,8 @@ const useStyles = makeStyles((theme) => ({
 const FormAgregarActividad = () => {
   const initialFormState = {
     id: null,
-    idtipolabor: "",
-    idparcela_1: "",
+    idtipolabor: 0,
+    idparcela_1: 0,
     fecha_inicio: "",
     fecha_fin: "",
     avance: "",
