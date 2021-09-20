@@ -13,7 +13,7 @@ const Sidebar = ({ children }) => (
             to="/"
             className="list-group-item list-group-item-action bg-transparent second-text active"
           >
-            <i className="fas fa-tachometer-alt me-2"></i>Dashboard
+            <i className="fas fa-tachometer-alt me-2"></i>Estadísticas
           </Link>
 
           <Link

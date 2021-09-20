@@ -331,7 +331,7 @@ const FormAgregarActividad = () => {
                     <Grid item xs={12} lg={2} sm={3}>
                       <FormControl className={classesSelect.formControl}>
                         <InputLabel id="demo-simple-select-label">
-                          Recurso
+                          Tipo de recurso
                         </InputLabel>
                         <Select
                           labelId="demo-simple-select-label"
@@ -349,7 +349,7 @@ const FormAgregarActividad = () => {
                     </Grid>
                     <Grid item xs={12} lg={2} sm={3}>
                       <TextField
-                        label="Cantidad"
+                        label="Cantidad de recurso"
                         pattern="[0-9]{0,13}"
                         onChange={handleInputChange}
                         name="cantidad"
@@ -358,7 +358,7 @@ const FormAgregarActividad = () => {
                     </Grid>
                     <Grid item xs={12} lg={2} sm={3}>
                       <TextField
-                        label="Costo"
+                        label="Costo del recurso"
                         pattern="[0-9]{0,13}"
                         onChange={handleInputChange}
                         name="costo"

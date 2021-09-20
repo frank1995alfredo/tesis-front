@@ -7,7 +7,7 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import CancelIcon from "@material-ui/icons/Cancel";
 import FormControl from "@material-ui/core/FormControl";
-import Input from "@material-ui/core/Input";
+
 import NumberFormat from "react-number-format";
 import { useParams } from "react-router-dom";
 
@@ -61,7 +61,6 @@ const FormEditarActividad = () => {
     try {
       await axios.get(`${URL}/buscarActividad/${id}`, {}).then((response) => {
         setEditarActividad({
-          id: response.data.data[0].id,
           idtipolabor: response.data.data[0].idtipolabor,
           idparcela_1: response.data.data[0].idparcela,
           idrecurso: response.data.data[0].idrecurso,
@@ -72,7 +71,37 @@ const FormEditarActividad = () => {
           cantidad: response.data.data[0].cantidad,
           costo: response.data.data[0].costo,
         });
+
+        console.log(response.data)
       });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const peticionEditar = async () => {
+    let data = {
+      idtipolabor: editarActividad.idtipolabor,
+      idparcela_1: editarActividad.idparcela_1,
+      idrecurso: editarActividad.idrecurso,
+      fecha_inicio: editarActividad.fecha_inicio,
+      fecha_fin: editarActividad.fecha_fin,
+      avance: editarActividad.avance,
+      total_actividad: editarActividad.total_actividad,
+      cantidad: editarActividad.cantidad,
+      costo: editarActividad.costo,
+    };
+    try {
+      await axios
+        .put(`${URL}/editarActividad/${id}`, data, {})
+        .then((response) => {
+          setEditarActividad(initialFormState);
+          Alerta.fire({
+            icon: "success",
+            title: "Registro editado.",
+          });
+          console.log(response.data);
+        });
     } catch (error) {
       console.log(error);
     }
@@ -358,14 +387,24 @@ const FormEditarActividad = () => {
                         id="formatted-numberformat-input"
                       />
                     </Grid>
+                    <Grid item xs={12} lg={2} sm={3}>
+                      <TextField
+                        label="Costo"
+                        pattern="[0-9]{0,13}"
+                        onChange={handleInputChange}
+                        value={editarActividad.costo}
+                        name="costo"
+                        id="formatted-numberformat-input"
+                      />
+                    </Grid>
                     <Grid item xs={12} sm={12}>
                       <Button
                         variant="contained"
-                        //onClick={() => peticionAgregar()}
+                        onClick={() => peticionEditar()}
                         size="small"
                         color="primary"
                       >
-                        <AddCircleIcon /> Agregar
+                        <AddCircleIcon /> Editar
                       </Button>{" "}
                       <Button
                         variant="contained"

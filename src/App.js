@@ -18,6 +18,7 @@ import ListaParcela from "./page/Parcela/ListaParcela";
 import Bodega from "./page/Bodega/Bodega";
 import FormAgregarActividad from "./page/Actividades/FormAgregarActividad"
 import FormEditarActividad from "./page/Actividades/FormEditarActividad"
+import ListaProducto from "./page/Producto/ListaProducto"
 
 function App() {
   
@@ -40,6 +41,8 @@ function App() {
         
         <Route exact path="/bodega" component={ Bodega }/>   
         <Route exact path="/bodega/recursos" component={ ListaRecursos }/>  
+
+        <Route exact path="/bodega/producto" component={ ListaProducto }/>  
 
  
       </Switch>

@@ -1,24 +1,28 @@
 import { useEffect, useState } from "react";
 import MaterialTable from "material-table";
+import { green } from "@material-ui/core/colors";
 import Navbar from "../../components/Navbar/Navbar";
-import ModalEliminarRecursos from "./ModalEliminarRecursos";
-import ModalAgregarRecursos from "./ModalAgregarRecursos";
-import ModalEditarRecursos from "./ModalEditarRecursos";
-
+import ModalEliminarProducto from "./ModalEliminarProducto";
+import ModalAgregarProducto from "./ModalAgregarProducto";
+import ModalEditarProducto from "./ModalEditarProducto";
+import Chip from "@material-ui/core/Chip";
+import { Link } from "react-router-dom";
+import URL from "../../configuration/URL";
 const columns = [
   {
     title: "#",
+    render: (rowData) => rowData.tableData.id + 1,
   },
   {
-    title: "nombre",
+    title: "Nombre",
     field: "nombre",
   },
   {
-    title: "F. Compra",
+    title: "Fecha_compra",
     field: "fecha_compra",
   },
   {
-    title: "F. Caducidad",
+    title: "Fecha_caducidad",
     field: "fecha_caducidad",
   },
   {
@@ -30,23 +34,29 @@ const columns = [
     field: "cantidad",
   },
   {
-    title: "Descripción",
+    title: "Descripcion",
     field: "descripcion",
   },
-  
-];
-const data = [
   {
-    id: 1,
-    nombre: "Ejemplo",
-    fecha_compra: "2021-07-08",
-    fecha_caducidad: "2022-07-08",
-    precio: 30.50,
-    cantidad: 4,
-    descripcion: "ejemplo"
+    title: "Estado",
+    render: (rowData) =>
+      rowData.estado === 1 ? (
+        <Chip
+          variant="outlined"
+          style={{ backgroundColor: green[500] }}
+          label="Activo"
+          size="small"
+        />
+      ) : (
+        ""
+      ),
   },
 ];
+
+
 const ListaProducto = () => {
+  const [listaProducto, setListaProducto] = useState([]);
+
   const [modalEliminar, setModalEliminar] = useState(false);
   const [modalInsertar, setModalInsertar] = useState(false);
   const [modalEditar, setModalEditar] = useState(false);
@@ -55,14 +65,13 @@ const ListaProducto = () => {
     nombre: "",
     fecha_compra: "",
     fecha_caducidad: "",
-    precio: 0.0,
-    cantidad: 0,
+    precio: 0,
+    cantidad: 0.0,
     descripcion: "",
-    estado: 1
   });
 
-  const seleccionarProducto = (productos, caso) => {
-    setRecursosSeleccionado(recursos);
+  const seleccionarProducto = (producto, caso) => {
+    setProductoSeleccionado(producto);
 
     if (caso === "Eliminar") {
       abrirCerrarModalEliminar();
@@ -82,10 +91,31 @@ const ListaProducto = () => {
   const abrirCerrarModalEditar = () => {
     setModalEditar(!modalEditar);
   };
+  useEffect(() => {
+    const abortController = new AbortController();
+    //LISTAR ARTICULOS
+    const listaProductos = async () => {
+      try {
+        let response = await fetch(`${URL}/listaProducto`, {
+          signal: abortController.signal,
+        });
+        response = await response.json();
+        setListaProducto(response.data);
+      } catch (error) {
+        console.log(error);
+        if (abortController.signal.aborted) {
+          console.log(abortController.signal.aborted);
+        } else throw error;
+      }
+    };
+
+    listaProductos();
+    return () => abortController.abort();
+  }, []);
 
   return (
     <>
-      <Navbar nombre="Productos">
+      <Navbar nombre="Producto">
         <div className="container-fluid px-4">
           <div className="row">
             <div className="col-auto">
@@ -98,13 +128,23 @@ const ListaProducto = () => {
                 <i className="fas fa-plus-circle "></i> Nuevo Producto
               </button>
             </div>
+            <div className="col-auto">
+              {" "}
+              <Link
+                to="/actividades"
+                type="button"
+                className="btn btn-secondary btn-sm"
+              >
+                <i class="fas fa-arrow-left"></i> Regresar
+              </Link>
+            </div>
           </div>
           <div className="row my-4">
             <div className="col">
               <MaterialTable
                 columns={columns}
-                data={data}
-                title="Lista de Recursos"
+                data={listaProducto}
+                title="Lista de Producto"
                 actions={[
                   {
                     icon: "edit",
@@ -126,37 +166,28 @@ const ListaProducto = () => {
                   header: {
                     actions: "Acciones",
                   },
-                  toolbar: {
-                    searchTooltip: 'Buscar',
-                    searchPlaceholder: 'Buscar'
-                  },
-                  pagination: {
-                    labelRowsSelect: 'Registros',
-                    firstTooltip: 'Primera página',
-                    previousTooltip: 'Página anterior',
-                    nextTooltip: 'Siguiente página',
-                    lastTooltip: 'Última página',
-                  }
                 }}
               />
             </div>
           </div>
         </div>
       </Navbar>
-      <ModalAgregarRecursos
-        setRecursosSeleccionado={setRecursosSeleccionado}
-        recursosSeleccionado={recursosSeleccionado}
+      <ModalAgregarProducto
+        setProductoSeleccionado={setProductoSeleccionado}
+        productoSeleccionado={productoSeleccionado}
+        listaProducto={listaProducto}
+        setListaProducto={setListaProducto}
         abrirCerrarModalInsertar={abrirCerrarModalInsertar}
         modalInsertar={modalInsertar}
       />
-      <ModalEliminarRecursos
-        recursosSeleccionado={recursosSeleccionado}
+      <ModalEliminarProducto
+        productoSeleccionado={productoSeleccionado}
         abrirCerrarModalEliminar={abrirCerrarModalEliminar}
         modalEliminar={modalEliminar}
       />
-      <ModalEditarRecursos
-        setRecursosSeleccionado={setRecursosSeleccionado}
-        recursosSeleccionado={recursosSeleccionado}
+      <ModalEditarProducto
+        setProductoSeleccionado={setProductoSeleccionado}
+        productoSeleccionado={productoSeleccionado}
         abrirCerrarModalEditar={abrirCerrarModalEditar}
         modalEditar={modalEditar}
       />

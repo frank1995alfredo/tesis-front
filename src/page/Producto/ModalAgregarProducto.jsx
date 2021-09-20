@@ -13,29 +13,30 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ModalAgregarParcela = ({
+const ModalAgregarProducto = ({
   modalInsertar,
   abrirCerrarModalInsertar,
-  setParcelaSeleccionado,
-  parcelaSeleccionado,
-  listaParcela,
-  setListaParcela
+  setProductoSeleccionado,
+  productoSeleccionado,
+  listaProducto,
+  setListaProducto,
 }) => {
   const styles = useStyles();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setParcelaSeleccionado((prevState) => ({
+    setProductoSeleccionado((prevState) => ({
       ...prevState,
       [name]: value,
     }));
+    console.log(productoSeleccionado);
   };
 
-  const agregarParcela = async () => {
+  const agregarProducto = async () => {
     await axios
-      .post(`${URL}/crearParcela`, parcelaSeleccionado)
+      .post(`${URL}/crearProducto`, productoSeleccionado)
       .then((response) => {
-        setListaParcela(listaParcela.concat(response.data.data[0]));
+        setListaProducto(listaProducto.concat(response.data.data[0]));
         Alerta.fire({
           icon: "success",
           title: "Registro agregado.",
@@ -46,33 +47,61 @@ const ModalAgregarParcela = ({
         console.log(error);
       });
   };
-
   return (
     <Modal open={modalInsertar} close={abrirCerrarModalInsertar}>
-      <h3>Nuevo Parcela</h3>
+      <h3>Nuevo Producto</h3>
       <TextField
         className={styles.inputMaterial}
-        label="Numero"
-        name="numero"
+        label="Nombre"
+        name="nombre"
         onChange={handleChange}
       />
+
+      <TextField
+        id="date"
+        label="Fecha de Compra"
+        type="date"
+        defaultValue="2017-05-24"
+        name="fecha_compra"
+        onChange={handleChange}
+        className={styles.inputMaterial}
+      />
       
-      <br />
+      <TextField
+        id="date"
+        label="Fecha_caducidad"
+        type="date"
+        defaultValue="2017-05-24"
+        name="fecha_caducidad"
+        onChange={handleChange}
+        className={styles.inputMaterial}
+      />
+
       <TextField
         className={styles.inputMaterial}
-        label="Extencion"
-        name="extencion"
+        label="Precio"
+        name="precio"
         onChange={handleChange}
       />
-      
-      <br />
+      <TextField
+        className={styles.inputMaterial}
+        label="Cantidad"
+        name="cantidad"
+        onChange={handleChange}
+      />
       <TextField
         className={styles.inputMaterial}
         label="Descripcion"
         name="descripcion"
         onChange={handleChange}
       />
-      
+      <TextField
+        className={styles.inputMaterial}
+        label="Estado"
+        name="estado"
+        onChange={handleChange}
+      />
+
       <br />
       <br />
       <div align="right">
@@ -80,7 +109,7 @@ const ModalAgregarParcela = ({
           variant="contained"
           color="primary"
           size="small"
-          onClick={() => agregarParcela()}
+          onClick={() => agregarProducto()}
         >
           {" "}
           <AddCircleIcon />
@@ -100,4 +129,4 @@ const ModalAgregarParcela = ({
   );
 };
 
-export default ModalAgregarParcela;
+export default ModalAgregarProducto;

@@ -17,7 +17,7 @@ const Bodega = () => {
                   to="/bodega/producto"
                   className="list-group-item list-group-item-action bg-transparent second-text active"
                 >
-                  <p className="text-center">Productos</p>
+                  <p className="text-center">Productos (Insumos)</p>
                 </Link>
               </div>
               <i class="fas fa-gift fs-1 primary-text border rounded-full secondary-bg p-3"></i>
@@ -31,7 +31,7 @@ const Bodega = () => {
                   to="/bodega/recursos"
                   className="list-group-item list-group-item-action bg-transparent second-text active"
                 >
-                  <p className="text-center">Recursos</p>
+                  <p className="text-center">Recursos (Herramientas)</p>
                 </Link>
               </div>
               <i class="fas fa-gift fs-1 primary-text border rounded-full secondary-bg p-3"></i>
