@@ -19,6 +19,8 @@ import Bodega from "./page/Bodega/Bodega";
 import FormAgregarActividad from "./page/Actividades/FormAgregarActividad"
 import FormEditarActividad from "./page/Actividades/FormEditarActividad"
 import ListaProducto from "./page/Producto/ListaProducto"
+import Login from "./page/Login/Login";
+import FormCambiarPassword from "./page/Login/FormCambiarPassword";
 
 function App() {
   
@@ -26,6 +28,9 @@ function App() {
     <Router>
       <Switch>
       
+        <Route exact path="/login" component={ Login }/>
+        <Route exact path="/cambiarPassword" component={ FormCambiarPassword }/>
+
         <Route exact path="/" component={ Dashboard }/>
         <Route exact path="/actividades/labores" component={ ListaLabor }/>
         <Route exact path="/actividades/afectaciones" component={ ListaAfectacion }/>

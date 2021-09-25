@@ -1,8 +1,12 @@
+import { useState, useEffect, useRef } from "react";
 import { TextField, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import Modal from "../../components/Modals/Modal";
 import CancelIcon from "@material-ui/icons/Cancel";
 import EditIcon from '@material-ui/icons/Edit';
+import URL from "../../configuration/URL";
+import axios from "axios";
+import Alerta from "../../components/Alerts/Alerta";
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -15,9 +19,49 @@ const ModalEditarUsuario = ({
   abrirCerrarModalEditar,
   usuarioSeleccionado,
   setUsuarioSeleccionado,
+  listaUsuarios,
+  setListaUsuarios
 
 }) => {
+
+  const initialFormState = {
+    id: null,
+    nombre: "",
+    apellido: "",
+    usuario: "",
+    password: "",
+    cedula: ""
+  };
   
+  const [editarUsuario, setEditarUsuario] = useState(initialFormState);
+  const countRef = useRef(0);
+  const buscarUsuario = async () => {
+    
+      try {
+        await axios.get(`${URL}/buscarUsuario/${usuarioSeleccionado.id}`, {}).then((response) => {
+          setEditarUsuario({
+            nombre: response.data.data[0].nombre,
+            apellido: response.data.data[0].apellido,
+            usuario: response.data.data[0].usuario,
+            cedula: response.data.data[0].cedula,
+            password: response.data.data[0][0],
+          });
+          console.log(response.data.data[0])
+        });
+      } catch (error) {
+        console.log(error);
+      }
+  };
+
+  useEffect(() => {
+    if(usuarioSeleccionado.id === 0){
+      return
+    } else {
+      buscarUsuario()
+    }
+    
+  }, [countRef]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUsuarioSeleccionado((prevState) => ({
@@ -27,6 +71,8 @@ const ModalEditarUsuario = ({
   };
   const styles = useStyles();
 
+
+
   return (
     <Modal open={modalEditar} close={abrirCerrarModalEditar}>
       <h3>Editar Usuario</h3>
@@ -35,7 +81,7 @@ const ModalEditarUsuario = ({
         label="Usuario"
         name="usuario"
         onChange={handleChange}
-        value={usuarioSeleccionado.usuario}
+        value={editarUsuario.usuario}
       />
       <br />
       <TextField
@@ -43,7 +89,7 @@ const ModalEditarUsuario = ({
         label="Contraseña"
         name="password"
         onChange={handleChange}
-        value={usuarioSeleccionado.password}
+        value={editarUsuario.password}
       />
       <br />
       <TextField
@@ -51,7 +97,7 @@ const ModalEditarUsuario = ({
         label="Nombre"
         name="nombre"
         onChange={handleChange}
-        value={usuarioSeleccionado.nombre}
+        value={editarUsuario.nombre}
       />
       <br />
       <TextField
@@ -59,7 +105,7 @@ const ModalEditarUsuario = ({
         label="Apellido"
         name="apellido"
         onChange={handleChange}
-        value={usuarioSeleccionado.apellido}
+        value={editarUsuario.apellido}
       />
       <br />
       <TextField
@@ -67,7 +113,7 @@ const ModalEditarUsuario = ({
         label="Cédula"
         name="cedula"
         onChange={handleChange}
-        value={usuarioSeleccionado.cedula}
+        value={editarUsuario.cedula}
       />
       <br />
       <br />

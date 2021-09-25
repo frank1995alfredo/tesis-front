@@ -9,6 +9,7 @@ const Sidebar = ({ children }) => (
           <i className="fas fa-user-secret me-2"></i>SisArroz
         </div>
         <div className="list-group list-group-flush my-3">
+          
           <Link
             to="/"
             className="list-group-item list-group-item-action bg-transparent second-text active"

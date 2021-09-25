@@ -5,25 +5,62 @@ import URL from "../../configuration/URL";
 import axios from "axios";
 
 const Dashboard = () => {
+
+
+  var y = new Date().getFullYear();
+
+ const [listaCompras, setListaCompras] = useState([]);
+ const [listaGastos, setListaGastos] = useState([]);
+
+ useEffect(() => {
+  const abortController = new AbortController();
+
+  //LISTAR COMPRAS
+  const listaCompras = async () => {
+    try {
+      let response = await fetch(`${URL}/listaProductoPorMes`, {
+        signal: abortController.signal,
+      });
+      response = await response.json();
+      setListaCompras(response.data);
+    } catch (error) {
+      console.log(error);
+      if (abortController.signal.aborted) {
+        console.log(abortController.signal.aborted);
+      } else throw error;
+    }
+  };
+
+  //LISTAR GASTOS
+  const listaGastos = async () => {
+    try {
+      let response = await fetch(`${URL}/listaProductoGastosPorMes`, {
+        signal: abortController.signal,
+      });
+      response = await response.json();
+      setListaGastos(response.data);
+    } catch (error) {
+      console.log(error);
+      if (abortController.signal.aborted) {
+        console.log(abortController.signal.aborted);
+      } else throw error;
+    }
+  };
+   
+  listaCompras();
+  listaGastos();
+  return () => abortController.abort();
+}, []);
+
+
   const data = {
-    labels: [
-      "Enero",
-      "Febrero",
-      "Marzo",
-      "Abril",
-      "Mayo",
-      "Junio",
-      "Julio",
-      "Agosto",
-      "Septiembre",
-      "Octubre",
-      "Noviembre",
-      "Diciembre",
-    ],
+    labels:    
+        listaCompras.map(compra => (compra.mes))  
+    ,
     datasets: [
       {
-        label: "Compras de productos por mes",
-        data: [12, 19, 3, 5, 2, 3, 5, 7, 32, 42, 3, 5],
+        label: `Compras de productos por mes del año ${y}`,
+        data: listaCompras.map(compra => (compra.num)),
         backgroundColor: [
           "rgba(255, 99, 132, 0.2)",
           "rgba(54, 162, 235, 0.2)",
@@ -57,25 +94,15 @@ const Dashboard = () => {
     },
   };
 
+  let signo = '$';
   const data3 = {
-    labels: [
-      "Enero",
-      "Febrero",
-      "Marzo",
-      "Abril",
-      "Mayo",
-      "Junio",
-      "Julio",
-      "Agosto",
-      "Septiembre",
-      "Octubre",
-      "Noviembre",
-      "Diciembre",
-    ],
+    labels: 
+    listaGastos.map(gasto => (gasto.mes)) 
+    ,
     datasets: [
       {
-        label: "Gastos de productos por mes",
-        data: [20.5, 50, 14.5, 47, 13, 12, 65.8, 8, 32, 42, 3, 5],
+        label: `Gastos de productos por mes del año ${y}`,
+        data: listaGastos.map(gasto => (gasto.total)),
         backgroundColor: [
           "rgba(255, 99, 132, 0.2)",
           "rgba(54, 162, 235, 0.2)",

@@ -4,11 +4,15 @@ import Navbar from "../../components/Navbar/Navbar";
 import ModalEliminarUsuario from "./ModalEliminarUsuario";
 import ModalAgregarUsuario from "./ModalAgregarUsuario";
 import ModalEditarUsuario from "./ModalEditarUsuario";
+import Chip from "@material-ui/core/Chip";
+import { green } from "@material-ui/core/colors";
 import { Link } from "react-router-dom";
+import URL from "../../configuration/URL";
 
 const columns = [
   {
     title: "#",
+    render: (rowData) => rowData.tableData.id + 1,
   },
   {
     title: "Usuario",
@@ -26,18 +30,30 @@ const columns = [
     title: "Cédula",
     field: "cedula",
   },
+  {
+    title: "Tipo Usuario",
+    field: "tipousuario",
+  },
+  {
+    title: "Estado",
+    render: (rowData) =>
+      rowData.estado === 1 ? (
+        <Chip
+          variant="outlined"
+          style={{ backgroundColor: green[500] }}
+          label="Activo"
+          size="small"
+        />
+      ) : (
+        ""
+      ),
+  },
   
 ];
-const data = [
-  {
-    id: 1,
-    usuario: "usuario 1",
-    nombre: "nombre 1",
-    apellido: "apellido 1",
-    cedula: "2100373873"
-  },
-];
+
 const ListaUsuarios = () => {
+
+  const [listaUsuarios, setListaUsuarios] = useState([]);
   
   const [modalEliminar, setModalEliminar] = useState(false);
   const [modalInsertar, setModalInsertar] = useState(false);
@@ -48,10 +64,36 @@ const ListaUsuarios = () => {
     nombre: "",
     apellido: "",
     cedula: "",
+    tipousuario: ""
   });
 
-  const seleccionarLabor = (labor, caso) => {
-    setUsuarioSeleccionado(labor);
+  useEffect(() => {
+    const abortController = new AbortController();
+
+    //LISTAR RECURSO
+    const listaUsuarios = async () => {
+      try {
+        let response = await fetch(`${URL}/listaUsuarios`, {
+          signal: abortController.signal,
+        });
+        response = await response.json();
+        setListaUsuarios(response.data);
+      } catch (error) {
+        console.log(error);
+        if (abortController.signal.aborted) {
+          console.log(abortController.signal.aborted);
+        } else throw error;
+      }
+    };
+
+    listaUsuarios();
+    return () => abortController.abort();
+  }, []);
+
+
+
+  const seleccionarUsuario = (usuario, caso) => {
+    setUsuarioSeleccionado(usuario);
 
     if (caso === "Eliminar") {
       abrirCerrarModalEliminar();
@@ -85,7 +127,7 @@ const ListaUsuarios = () => {
                 onClick={abrirCerrarModalInsertar}
               >
                 {" "}
-                <i className="fas fa-plus-circle "></i> Nueva Labor
+                <i className="fas fa-plus-circle "></i> Nuevo Usuario
               </button>
             </div>
           </div>
@@ -93,20 +135,15 @@ const ListaUsuarios = () => {
             <div className="col">
               <MaterialTable
                 columns={columns}
-                data={data}
+                data={listaUsuarios}
                 title="Lista de Usuarios"
                 actions={[
-                  {
-                    icon: "edit",
-                    tooltip: "Editar Usuario",
-                    onClick: (event, rowData) =>
-                      seleccionarLabor(rowData, "Editar"),
-                  },
+                 
                   {
                     icon: "delete",
                     tooltip: "Eliminar Usuario",
                     onClick: (event, rowData) =>
-                      seleccionarLabor(rowData, "Eliminar"),
+                      seleccionarUsuario(rowData, "Eliminar"),
                   },
                 ]}
                 options={{
@@ -116,6 +153,17 @@ const ListaUsuarios = () => {
                   header: {
                     actions: "Acciones",
                   },
+                  toolbar: {
+                    searchTooltip: 'Buscar',
+                    searchPlaceholder: 'Buscar'
+                  },
+                  pagination: {
+                    labelRowsSelect: 'Registros',
+                    firstTooltip: 'Primera página',
+                    previousTooltip: 'Página anterior',
+                    nextTooltip: 'Siguiente página',
+                    lastTooltip: 'Última página',
+                  }
                 }}
               />
             </div>
@@ -124,19 +172,27 @@ const ListaUsuarios = () => {
       </Navbar>
       <ModalAgregarUsuario
         setUsuarioSeleccionado={setUsuarioSeleccionado}
+        usuarioSeleccionado={usuarioSeleccionado}
+        listaUsuarios={listaUsuarios}
+        setListaUsuarios={setListaUsuarios}
         abrirCerrarModalInsertar={abrirCerrarModalInsertar}
         modalInsertar={modalInsertar}
+      
       />
       <ModalEliminarUsuario
         usuarioSeleccionado={usuarioSeleccionado}
         abrirCerrarModalEliminar={abrirCerrarModalEliminar}
         modalEliminar={modalEliminar}
+        listaUsuarios={listaUsuarios}
+        setListaUsuarios={setListaUsuarios}
       />
       <ModalEditarUsuario
         setUsuarioSeleccionado={setUsuarioSeleccionado}
         usuarioSeleccionado={usuarioSeleccionado}
         abrirCerrarModalEditar={abrirCerrarModalEditar}
         modalEditar={modalEditar}
+        listaUsuarios={listaUsuarios}
+        setListaUsuarios={setListaUsuarios}
       />
     </>
   );
