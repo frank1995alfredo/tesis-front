@@ -6,6 +6,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
 import URL from "../../configuration/URL";
+import valorToken from "../../configuration/valorToken";
 
 const ModalEliminarAfectacion = ({
   afectacionSeleccionado,
@@ -16,9 +17,16 @@ const ModalEliminarAfectacion = ({
  
 }) => {
 
+  const token = valorToken()
+
   const eliminarAfectacion = async () => {
 
-    await axios.delete(`${URL}/eliminarAfectacion/` + afectacionSeleccionado.id)
+    await axios.delete(`${URL}/eliminarAfectacion/` + afectacionSeleccionado.id, {
+      headers: 
+        {
+          Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
+        }
+    })
       .then((response) => {
         setListaAfectacion(
           listaAfectacion.filter((afectacion) => afectacion.id !== afectacionSeleccionado.id)

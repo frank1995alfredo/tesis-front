@@ -34,22 +34,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const FormAgregarActividad = () => {
+const FormAgregarAfectacionParcela = () => {
 
   const token = valorToken()
 
   const initialFormState = {
     id: null,
-    idtipolabor: 0,
-    idparcela_1: 0,
-    fecha_inicio: "",
-    fecha_fin: "",
-    avance: "",
-    total_actividad: 0.0,
-    idrecurso: 0,
-    cantidad: 0,
-    costo: 0.0,
-    idtrabajador: null
+    idafectacion: 0,
+    idparcela: 0,
+    fecha: Date,
+    observacion: "",
   };
 
   const select = makeStyles((theme) => ({
@@ -61,70 +55,34 @@ const FormAgregarActividad = () => {
       marginTop: theme.spacing(2),
     },
   }));
-  const [agregarActividad, setAgregarActividad] = useState(initialFormState);
+  const [agregarAfectacionParcela, setAgregarAfectacionParcela] = useState(initialFormState);
   const [listaParcela, setListaParcela] = useState([]);
-  const [listaRecurso, setListaRecurso] = useState([]);
-  const [listaLabor, setListaLabor] = useState([]);
-  const [listaTipoTrabajador, setListaTipoTrabajador] = useState([]);
+  const [listaAfectacion, setListaAfectacion] = useState([]);
+  
 
   const history = useHistory();
   const cancelar = () => {
-    history.push(`/actividades/actividades`);
+    history.push(``);
+  };
+  const PeticionRegresa = () => {
+    history.push(`/AfectacionParcela`);
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setAgregarActividad({ ...agregarActividad, [name]: value });
-
+    setAgregarAfectacionParcela({ ...agregarAfectacionParcela, [name]: value });
+    console.log(agregarAfectacionParcela);
   };
 
   //LISTAS
   useEffect(() => {
     const abortController = new AbortController();
 
-    const listaRecurso = async () => {
-      try {
-        let response = await fetch(`${URL}/listaRecursos`, {
-          signal: abortController.signal,
-          headers: 
-          {
-            Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
-          }
-        });
-        response = await response.json();
-        setListaRecurso(response.data);
-        console.log(response.data);
-      } catch (error) {
-        console.log(error);
-        if (abortController.signal.aborted) {
-          console.log(abortController.signal.aborted);
-        } else throw error;
-      }
-    };
-
-    const listaLabores = async () => {
-      try {
-        let response = await fetch(`${URL}/listaLabores`, {
-          signal: abortController.signal,
-          headers: 
-          {
-            Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
-          }
-        });
-        response = await response.json();
-        setListaLabor(response.data);
-       
-      } catch (error) {
-        console.log(error);
-        if (abortController.signal.aborted) {
-          console.log(abortController.signal.aborted);
-        } else throw error;
-      }
-    };
+    
 
     const listaParcela = async () => {
       try {
-        let response = await fetch(`${URL}/listaParcelas`, {
+        let response = await fetch(`${URL}/listaParcela`, {
           signal: abortController.signal,
           headers: 
           {
@@ -142,11 +100,9 @@ const FormAgregarActividad = () => {
       }
     };
 
-  
-
-    const listaTrabajor = async () => {
+    const listaAfectacion = async () => {
       try {
-        let response = await fetch(`${URL}/listaTipoTrabajador`, {
+        let response = await fetch(`${URL}/listaAfectacion`, {
           signal: abortController.signal,
           headers: 
           {
@@ -154,8 +110,8 @@ const FormAgregarActividad = () => {
           }
         });
         response = await response.json();
-        setListaTipoTrabajador(response.data);
-     
+        setListaAfectacion(response.data);
+        console.log(response.data);
       } catch (error) {
         console.log(error);
         if (abortController.signal.aborted) {
@@ -164,32 +120,35 @@ const FormAgregarActividad = () => {
       }
     };
 
-    listaLabores();
+    
     listaParcela();
-    listaRecurso();
-    listaTrabajor();
+    listaAfectacion();
 
     return () => abortController.abort();
   }, []);
 
   const peticionAgregar = async () => {
     await axios
-      .post(`${URL}/crearActividad`, agregarActividad, {
+      .post(`${URL}/crearAfectacionParcela`, agregarAfectacionParcela, {
         headers: 
         {
           Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
-        }  
+        }
       })
       .then((response) => {
-        setAgregarActividad(initialFormState);
+        setAgregarAfectacionParcela(initialFormState);
         Alerta.fire({
           icon: "success",
           title: "Registro agregado.",
+          
         });
+        PeticionRegresa()
+        
       })
       .catch((error) => {
         console.log(error);
       });
+    
   };
 
   var hoy = new Date();
@@ -264,13 +223,13 @@ const FormAgregarActividad = () => {
   const classesSelect = select();
   return (
     <>
-      <Navbar nombre="Agregar Actividad">
+      <Navbar nombre="Agregar Zona Afectada">
         <div className="container-fluid px-4">
           <div className="row">
             <div className="col-auto">
               {" "}
               <Link
-                to="/actividades/actividades"
+                to="/actividades/AfectacionParcela"
                 type="button"
                 className="btn btn-secondary btn-sm"
               >
@@ -284,19 +243,19 @@ const FormAgregarActividad = () => {
                 <div className="card-body">
                   <Grid container spacing={3}>
                     <Grid item xs={12} lg={2} sm={3}>
-                      <FormControl className={classesSelect.formControl}>
+                    <FormControl className={classesSelect.formControl}>
                         <InputLabel id="demo-simple-select-label">
-                          Tipo labor
+                          Afectacion
                         </InputLabel>
                         <Select
                           labelId="demo-simple-select-label"
                           id="demo-simple-select"
-                          name="idtipolabor"
+                          name="idafectacion"
                           onChange={handleInputChange}
                         >
-                          {listaLabor.map((labor, index) => (
-                            <MenuItem key={index} value={labor.id}>
-                              {labor.nombre}
+                          {listaAfectacion.map((afectacion, index) => (
+                            <MenuItem key={index} value={afectacion.id}>
+                              {afectacion.nombre_afectacion}
                             </MenuItem>
                           ))}
                         </Select>
@@ -310,7 +269,7 @@ const FormAgregarActividad = () => {
                         <Select
                           labelId="demo-simple-select-label"
                           id="demo-simple-select"
-                          name="idparcela_1"
+                          name="idparcela"
                           onChange={handleInputChange}
                         >
                           {listaParcela.map((parcela, index) => (
@@ -325,26 +284,10 @@ const FormAgregarActividad = () => {
                       <form className={classes.container} noValidate>
                         <TextField
                           id="date"
-                          label="Fecha inicio"
+                          label="Fecha"
                           type="date"
                           defaultValue="2017-05-24"
-                          name="fecha_inicio"
-                          onChange={handleInputChange}
-                          className={classes.textField}
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                        />
-                      </form>
-                    </Grid>
-                    <Grid item xs={12} lg={2} sm={3}>
-                      <form className={classes.container} noValidate>
-                        <TextField
-                          id="date"
-                          label="Fecha fin"
-                          type="date"
-                          defaultValue="2017-05-24"
-                          name="fecha_fin"
+                          name="fecha"
                           onChange={handleInputChange}
                           className={classes.textField}
                           InputLabelProps={{
@@ -357,79 +300,17 @@ const FormAgregarActividad = () => {
                     <Grid item xs={12} lg={2} sm={2}>
                       <TextField
                         required
-                        id="avance"
-                        name="avance"
-                        label="Avance"
+                        id="observacion"
+                        name="observacion"
+                        label="Observacion"
                         onChange={handleInputChange}
                         fullWidth
                       />
                     </Grid>
-                    <Grid item xs={12} lg={2} sm={2}>
-                      <TextField
-                        required
-                        id="total_actividad"
-                        name="total_actividad"
-                        label="Total Actividad"
-                        onChange={handleInputChange}
-                        fullWidth
-                      />
-                    </Grid>
-                    <Grid item xs={12} lg={2} sm={3}>
-                      <FormControl className={classesSelect.formControl}>
-                        <InputLabel id="demo-simple-select-label">
-                          Tipo de recurso
-                        </InputLabel>
-                        <Select
-                          labelId="demo-simple-select-label"
-                          id="demo-simple-select"
-                          name="idrecurso"
-                          onChange={handleInputChange}
-                        >
-                          {listaRecurso.map((recurso, index) => (
-                            <MenuItem key={index} value={recurso.id}>
-                              {recurso.nombre}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                    <Grid item xs={12} lg={2} sm={3}>
-                      <TextField
-                        label="Cantidad de recurso"
-                        pattern="[0-9]{0,13}"
-                        onChange={handleInputChange}
-                        name="cantidad"
-                        id="formatted-numberformat-input"
-                      />
-                    </Grid>
-                    <Grid item xs={12} lg={2} sm={3}>
-                      <TextField
-                        label="Costo del recurso"
-                        pattern="[0-9]{0,13}"
-                        onChange={handleInputChange}
-                        name="costo"
-                        id="formatted-numberformat-input"
-                      />
-                    </Grid>
-                    <Grid item xs={12} lg={4} sm={4}>
-                      <FormControl className={classesSelect.formControl}>
-                        <InputLabel id="demo-simple-select-label">
-                          Trabajador
-                        </InputLabel>
-                        <Select
-                          labelId="demo-simple-select-label"
-                          id="demo-simple-select"
-                          name="idtrabajador"
-                          onChange={handleInputChange}
-                        >
-                          {listaTipoTrabajador.map((trabajador, index) => (
-                            <MenuItem key={index} value={trabajador.id}>
-                              {trabajador.nombre} 
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Grid>
+                    
+                    
+                    
+                    
                     <Grid item xs={12} sm={12}>
                       <Button
                         variant="contained"
@@ -443,7 +324,7 @@ const FormAgregarActividad = () => {
                         variant="contained"
                         size="small"
                         color="secondary"
-                        onClick={() => cancelar()}
+                        onClick={() => PeticionRegresa()}
                       >
                         <CancelIcon /> Cancelar
                       </Button>
@@ -459,4 +340,4 @@ const FormAgregarActividad = () => {
   );
 };
 
-export default FormAgregarActividad;
+export default FormAgregarAfectacionParcela;

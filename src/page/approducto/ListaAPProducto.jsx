@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import MaterialTable from "material-table";
 import Navbar from "../../components/Navbar/Navbar";
-import ModalEliminarRecursos from "./ModalEliminarRecursos";
-import ModalAgregarRecursos from "./ModalAgregarRecursos";
-import ModalEditarRecursos from "./ModalEditarRecursos";
+import { green, red } from "@material-ui/core/colors";
+import ModalEliminarAPProducto from "./ModalEliminarAPProducto";
 import { Link } from "react-router-dom";
 import URL from "../../configuration/URL";
+import Chip from "@material-ui/core/Chip";
+import { useHistory } from "react-router-dom";
 import valorToken from "../../configuration/valorToken";
 
 const columns = [
@@ -14,40 +15,69 @@ const columns = [
     render: (rowData) => rowData.tableData.id + 1,
   },
   {
+    title: "Numero",
+    field: "numero",
+  },
+  {
+    title: "Extencion",
+    field: "extencion",
+  },
+  {
+    title: "Afectacion Parcela",
+    field: "nombre_afectacion",
+  },
+  {
     title: "Nombre",
     field: "nombre",
   },
   {
-    title: "Características",
-    field: "caracteristica",
+    title: "Cantidad",
+    field: "cantidad",
+  },
+  {
+    title: "Costo",
+    field: "costo",
   },
 ];
 
-const ListaRecursos = () => {
+
+
+const ListaAPProducto = () => {
 
   const token = valorToken()
-
-  const [listaRecurso, setListaRecurso] = useState([]);
+  
+  const [listaAPProducto, setListaAPProducto] = useState([]);
 
   const [modalEliminar, setModalEliminar] = useState(false);
   const [modalInsertar, setModalInsertar] = useState(false);
   const [modalEditar, setModalEditar] = useState(false);
-  const [recursosSeleccionado, setRecursosSeleccionado] = useState({
-    id: 1,
-    nombre: "",
-    caracteristicas: "",
+  const [approductoSeleccionado, setAPProductoSeleccionado] = useState({
+    id: 0,
+    numero: 0,
+    nombre_afectacion: "",
+    fecha: Date,
+    observacion: "",
+    estado: 0,
   });
 
-  const seleccionarRecursos = (recursos, caso) => {
-    setRecursosSeleccionado(recursos);
+  const seleccionarAPProducto = (approducto, caso) => {
+    setAPProductoSeleccionado(approducto);
 
     if (caso === "Eliminar") {
       abrirCerrarModalEliminar();
-    } else {
+    } else{
       abrirCerrarModalEditar();
     }
+    
   };
-
+  //metodo para editar
+  const history = useHistory();
+  const handleUpdateClick = (id) => {
+    history.push(`/actividades/actividades/${id}/editarAPProducto`);
+  };
+  const handleInsertClick = (id) => {
+    history.push(``);
+  };
   const abrirCerrarModalInsertar = () => {
     setModalInsertar(!modalInsertar);
   };
@@ -63,10 +93,10 @@ const ListaRecursos = () => {
   useEffect(() => {
     const abortController = new AbortController();
 
-    //LISTAR RECURSO
-    const listaAfectacion = async () => {
+    //LISTAR AfectacionParcela
+    const listaAPProductos = async () => {
       try {
-        let response = await fetch(`${URL}/listaRecurso`, {
+        let response = await fetch(`${URL}/listaAfectacionParcelaProducto`, {
           signal: abortController.signal,
           headers: 
           {
@@ -74,7 +104,7 @@ const ListaRecursos = () => {
           }
         });
         response = await response.json();
-        setListaRecurso(response.data);
+        setListaAPProducto(response.data);
       } catch (error) {
         console.log(error);
         if (abortController.signal.aborted) {
@@ -83,28 +113,24 @@ const ListaRecursos = () => {
       }
     };
 
-    listaAfectacion();
+    listaAPProductos();
     return () => abortController.abort();
   }, []);
 
   return (
     <>
-      <Navbar nombre="Recursos">
+      <Navbar nombre="Acciones Tomadas">
         <div className="container-fluid px-4">
           <div className="row">
             <div className="col-auto">
-              <button
-                type="button"
-                className="btn btn-primary btn-sm"
-                onClick={abrirCerrarModalInsertar}
-              >
-                {" "}
-                <i className="fas fa-plus-circle "></i> Nueva Recursos
-              </button>
+            
+            </div>
+            <div className="col-auto">
+            
             </div>
             <div className="col-auto">
             {" "}
-              <Link to="/bodega" type="button" className="btn btn-secondary btn-sm">
+              <Link to="/actividades/AfectacionParcela" type="button" className="btn btn-secondary btn-sm">
                 <i class="fas fa-arrow-left"></i> Regresar
               </Link>
             </div>
@@ -113,21 +139,22 @@ const ListaRecursos = () => {
             <div className="col">
               <MaterialTable
                 columns={columns}
-                data={listaRecurso}
-                title="Lista de Recursos"
+                data={listaAPProducto}
+                title="Lista de acciones tomadas"
                 actions={[
                   {
                     icon: "edit",
-                    tooltip: "Editar Recurso",
+                    tooltip: "Editar AfectacionParcela",
                     onClick: (event, rowData) =>
-                      seleccionarRecursos(rowData, "Editar"),
+                      handleUpdateClick(rowData.id),
                   },
                   {
                     icon: "delete",
-                    tooltip: "Eliminar Recurso",
+                    tooltip: "Eliminar Afectación",
                     onClick: (event, rowData) =>
-                      seleccionarRecursos(rowData, "Eliminar"),
-                  }
+                      seleccionarAPProducto(rowData, "Eliminar"),
+                  },
+                  
                 ]}
                 options={{
                   actionsColumnIndex: -1,
@@ -153,32 +180,16 @@ const ListaRecursos = () => {
           </div>
         </div>
       </Navbar>
-      <ModalAgregarRecursos
-        setRecursosSeleccionado={setRecursosSeleccionado}
-        recursosSeleccionado={recursosSeleccionado}
-        abrirCerrarModalInsertar={abrirCerrarModalInsertar}
-        modalInsertar={modalInsertar}
-        setRecursosSeleccionado={setRecursosSeleccionado}
-        listaRecurso={listaRecurso}
-        setListaRecurso={setListaRecurso}
-      />
-      <ModalEliminarRecursos
-        recursosSeleccionado={recursosSeleccionado}
+      <ModalEliminarAPProducto
+        approductoSeleccionado={approductoSeleccionado}
+        listaAPProducto={listaAPProducto}
+        setListaAPProducto={setListaAPProducto}
         abrirCerrarModalEliminar={abrirCerrarModalEliminar}
         modalEliminar={modalEliminar}
-        listaRecurso={listaRecurso}
-        setListaRecurso={setListaRecurso}
       />
-      <ModalEditarRecursos
-        setRecursosSeleccionado={setRecursosSeleccionado}
-        recursosSeleccionado={recursosSeleccionado}
-        abrirCerrarModalEditar={abrirCerrarModalEditar}
-        modalEditar={modalEditar}
-        listaRecurso={listaRecurso}
-        setListaRecurso={setListaRecurso}
-      />
+   
     </>
   );
 };
 
-export default ListaRecursos;
+export default ListaAPProducto;

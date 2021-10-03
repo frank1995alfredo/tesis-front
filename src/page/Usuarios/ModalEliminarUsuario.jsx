@@ -6,6 +6,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
 import URL from "../../configuration/URL";
+import valorToken from "../../configuration/valorToken";
 
 const ModalEliminarUsuario = ({
   usuarioSeleccionado,
@@ -16,9 +17,16 @@ const ModalEliminarUsuario = ({
  
 }) => {
 
+  const token = valorToken()
+
   const eliminarUsuario = async () => {
 
-    await axios.delete(`${URL}/eliminarUsuario/` + usuarioSeleccionado.id)
+    await axios.delete(`${URL}/eliminarUsuario/` + usuarioSeleccionado.id, {
+      headers: 
+        {
+          Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
+        }
+    })
       .then((response) => {
         setListaUsuarios(
           listaUsuarios.filter((usuario) => usuario.id !== usuarioSeleccionado.id)

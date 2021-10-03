@@ -4,58 +4,124 @@ import {
   Route,
   Link,
   useParams,
-  useRouteMatch
+  useRouteMatch,
 } from "react-router-dom";
 
 import Dashboard from "./page/Dashboard/Dashboard";
-import ListaLabor from "./page/Labor/ListaLabor"
+import ListaLabor from "./page/Labor/ListaLabor";
 import Actividades from "./page/Actividades/Actividades";
 import ListaActividades from "./page/Actividades/ListaActividades";
 import ListaAfectacion from "./page/Afectacion/ListaAfectacion";
 import ListaUsuarios from "./page/Usuarios/ListaUsuarios";
-import ListaRecursos from "./page/Recursos/ListaRecursos"
+import ListaRecursos from "./page/Recursos/ListaRecursos";
 import ListaParcela from "./page/Parcela/ListaParcela";
 import Bodega from "./page/Bodega/Bodega";
-import FormAgregarActividad from "./page/Actividades/FormAgregarActividad"
-import FormEditarActividad from "./page/Actividades/FormEditarActividad"
-import ListaProducto from "./page/Producto/ListaProducto"
+import FormAgregarActividad from "./page/Actividades/FormAgregarActividad";
+import FormEditarActividad from "./page/Actividades/FormEditarActividad";
+import ListaProducto from "./page/Producto/ListaProducto";
 import Login from "./page/Login/Login";
 import FormCambiarPassword from "./page/Login/FormCambiarPassword";
+import FormEnviarEmailPassword from "./page/Login/FormEnviarEmailPassword";
+import ListaAfectacionParela from "./page/AfectacionParcela/ListaAfectacionParcela";
+
+import PrivateRoute from "./components/Routers/PrivateRoute";
+import AuthProvider from "./auth/AuthProvider";
+import NotFound from "./page/404/NotFound";
+import FormAgregarAfectacionParcela from "./page/AfectacionParcela/FormAgregarAfectacionParcela";
+import FormEditarAfectacionParcela from "./page/AfectacionParcela/FormEditarAfectacionParcela";
+import FormAgregarAPProducto from "./page/approducto/ListaAPProducto";
+import ListaAPProducto from "./page/approducto/ListaAPProducto";
 
 function App() {
-  
   return (
-    <Router>
-      <Switch>
-      
-        <Route exact path="/login" component={ Login }/>
-        <Route exact path="/cambiarPassword" component={ FormCambiarPassword }/>
+    <AuthProvider>
+      <Router>
+        <Switch>
+          <Route exact path="/login" component={Login} />
+          <Route
+            exact
+            path="/cambiarPassword"
+            component={FormEnviarEmailPassword}
+          />
 
-        <Route exact path="/" component={ Dashboard }/>
-        <Route exact path="/actividades/labores" component={ ListaLabor }/>
-        <Route exact path="/actividades/afectaciones" component={ ListaAfectacion }/>
-        <Route exact path="/actividades/actividades" component={ ListaActividades }/>
-        <Route exact path="/actividades/actividades/agregarActividad" component={ FormAgregarActividad }/>
-        <Route exact path="/actividades/actividades/:id/editarActividad" component={ FormEditarActividad }/>
-        <Route exact path="/actividades" component={ Actividades }/>
-       
+          <PrivateRoute exact path="/" component={Dashboard} />
+          <PrivateRoute exact path="/actividades" component={Actividades} />
+          <PrivateRoute
+            exact
+            path="/actividades/labores"
+            component={ListaLabor}
+          />
+          <PrivateRoute
+            exact
+            path="/actividades/afectaciones"
+            component={ListaAfectacion}
+          />
+          <PrivateRoute
+            exact
+            path="/actividades/actividades"
+            component={ListaActividades}
+          />
+          <PrivateRoute
+            exact
+            path="/actividades/actividades/agregarActividad"
+            component={FormAgregarActividad}
+          />
+          <PrivateRoute
+            exact
+            path="/actividades/actividades/:id/editarActividad"
+            component={FormEditarActividad}
+          />
 
-        <Route exact path="/usuarios" component={ ListaUsuarios }/>         
-        <Route exact path="/parcela" component={ ListaParcela }/>   
-        
-        
-        <Route exact path="/bodega" component={ Bodega }/>   
-        <Route exact path="/bodega/recursos" component={ ListaRecursos }/>  
+          <PrivateRoute
+            exact
+            path="/actividades/afectacionParcela"
+            component={ListaAfectacionParela}
+          />
+          <PrivateRoute
+            exact
+            path="/actividades/afectacionParcela/agregarAfectacionParcela"
+            component={FormAgregarAfectacionParcela}
+          />
 
-        <Route exact path="/bodega/producto" component={ ListaProducto }/>  
+          <PrivateRoute
+            exact
+            path="/actividades/afectacionParcela/:id/editarAfectacionParcela"
+            component={FormEditarAfectacionParcela}
+          />
 
- 
-      </Switch>
-    </Router>
-     
-  
-  )
- 
+          <PrivateRoute
+            exact
+            path="/actividades/afectacionParcela/:id/agregarAPProducto"
+            component={FormAgregarAPProducto}
+          />
+
+          <PrivateRoute
+            exact
+            path="/actividades/afectacionParcela/listaAPProducto"
+            component={ListaAPProducto}
+          />
+
+          <PrivateRoute exact path="/usuarios" component={ListaUsuarios} />
+          <PrivateRoute exact path="/parcela" component={ListaParcela} />
+
+          <PrivateRoute exact path="/bodega" component={Bodega} />
+          <PrivateRoute
+            exact
+            path="/bodega/recursos"
+            component={ListaRecursos}
+          />
+
+          <PrivateRoute
+            exact
+            path="/bodega/producto"
+            component={ListaProducto}
+          />
+
+          <Route exact path="*" component={NotFound} />
+        </Switch>
+      </Router>
+    </AuthProvider>
+  );
 }
 
 export default App;

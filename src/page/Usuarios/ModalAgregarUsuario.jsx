@@ -10,6 +10,7 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
+import valorToken from "../../configuration/valorToken";
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -25,6 +26,9 @@ const ModalAgregarUsuario = ({
   listaUsuarios,
   setListaUsuarios,
 }) => {
+
+  const token = valorToken()
+
   const styles = useStyles();
 
   const handleChange = (e) => {
@@ -37,7 +41,12 @@ const ModalAgregarUsuario = ({
 
   const agregarUsuario = async () => {
     await axios
-      .post(`${URL}/agregarUsuario`, usuarioSeleccionado)
+      .post(`${URL}/agregarUsuario`, usuarioSeleccionado, {
+        headers: 
+        {
+          Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
+        }
+      })
       .then((response) => {
         setListaUsuarios(listaUsuarios.concat(response.data.data[0]));
         Alerta.fire({
@@ -103,7 +112,7 @@ const ModalAgregarUsuario = ({
       <br />
 
       <FormControl className={classesSelect.formControl}>
-        <InputLabel id="demo-simple-select-label">Número parcela</InputLabel>
+        <InputLabel id="demo-simple-select-label">Tipo usuario</InputLabel>
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"

@@ -8,35 +8,36 @@ import ModalEditarProducto from "./ModalEditarProducto";
 import Chip from "@material-ui/core/Chip";
 import { Link } from "react-router-dom";
 import URL from "../../configuration/URL";
+
 const columns = [
-  {
-    title: "#",
-    render: (rowData) => rowData.tableData.id + 1,
-  },
-  {
-    title: "Nombre",
-    field: "nombre",
-  },
-  {
-    title: "Fecha_compra",
-    field: "fecha_compra",
-  },
-  {
-    title: "Fecha_caducidad",
-    field: "fecha_caducidad",
-  },
-  {
-    title: "Precio",
-    field: "precio",
-  },
-  {
-    title: "Cantidad",
-    field: "cantidad",
-  },
-  {
-    title: "Descripcion",
-    field: "descripcion",
-  },
+    {
+        title: "#",
+        render: (rowData) => rowData.tableData.id + 1,
+      },
+      {
+        title: "Nombre",
+        field: "nombre",
+      },
+      {
+        title: "Fecha_compra",
+        field: "fecha_compra",
+      },
+      {
+        title: "Fecha_caducidad",
+        field: "fecha_caducidad",
+      },
+      {
+        title: "Precio",
+        field: "precio",
+      },
+      {
+        title: "Cantidad",
+        field: "cantidad",
+      },
+      {
+        title: "Descripcion",
+        field: "descripcion",
+      },
   {
     title: "Estado",
     render: (rowData) =>
@@ -55,6 +56,7 @@ const columns = [
 
 
 const ListaProducto = () => {
+
   const [listaProducto, setListaProducto] = useState([]);
 
   const [modalEliminar, setModalEliminar] = useState(false);
@@ -62,12 +64,9 @@ const ListaProducto = () => {
   const [modalEditar, setModalEditar] = useState(false);
   const [productoSeleccionado, setProductoSeleccionado] = useState({
     id: 0,
-    nombre: "",
-    fecha_compra: "",
-    fecha_caducidad: "",
-    precio: 0,
-    cantidad: 0.0,
-    descripcion: "",
+    nombre_producto: "",
+    decripcion: "",
+    
   });
 
   const seleccionarProducto = (producto, caso) => {
@@ -91,10 +90,12 @@ const ListaProducto = () => {
   const abrirCerrarModalEditar = () => {
     setModalEditar(!modalEditar);
   };
+
   useEffect(() => {
     const abortController = new AbortController();
-    //LISTAR ARTICULOS
-    const listaProductos = async () => {
+    
+    //LISTAR Producto
+    const listaProducto = async () => {
       try {
         let response = await fetch(`${URL}/listaProducto`, {
           signal: abortController.signal,
@@ -109,7 +110,7 @@ const ListaProducto = () => {
       }
     };
 
-    listaProductos();
+    listaProducto();
     return () => abortController.abort();
   }, []);
 
@@ -125,16 +126,12 @@ const ListaProducto = () => {
                 onClick={abrirCerrarModalInsertar}
               >
                 {" "}
-                <i className="fas fa-plus-circle "></i> Nuevo Producto
+                <i className="fas fa-plus-circle "></i> Nueva Afectación
               </button>
             </div>
             <div className="col-auto">
-              {" "}
-              <Link
-                to="/actividades"
-                type="button"
-                className="btn btn-secondary btn-sm"
-              >
+            {" "}
+              <Link to="/actividades" type="button" className="btn btn-secondary btn-sm">
                 <i class="fas fa-arrow-left"></i> Regresar
               </Link>
             </div>
@@ -144,17 +141,17 @@ const ListaProducto = () => {
               <MaterialTable
                 columns={columns}
                 data={listaProducto}
-                title="Lista de Producto"
+                title="Lista de Productos"
                 actions={[
                   {
                     icon: "edit",
-                    tooltip: "Editar Producto",
+                    tooltip: "Editar Afectación",
                     onClick: (event, rowData) =>
                       seleccionarProducto(rowData, "Editar"),
                   },
                   {
                     icon: "delete",
-                    tooltip: "Eliminar Producto",
+                    tooltip: "Eliminar Afectación",
                     onClick: (event, rowData) =>
                       seleccionarProducto(rowData, "Eliminar"),
                   },
@@ -166,6 +163,17 @@ const ListaProducto = () => {
                   header: {
                     actions: "Acciones",
                   },
+                  toolbar: {
+                    searchTooltip: 'Buscar',
+                    searchPlaceholder: 'Buscar'
+                  },
+                  pagination: {
+                    labelRowsSelect: 'Registros',
+                    firstTooltip: 'Primera página',
+                    previousTooltip: 'Página anterior',
+                    nextTooltip: 'Siguiente página',
+                    lastTooltip: 'Última página',
+                  }
                 }}
               />
             </div>
@@ -175,21 +183,26 @@ const ListaProducto = () => {
       <ModalAgregarProducto
         setProductoSeleccionado={setProductoSeleccionado}
         productoSeleccionado={productoSeleccionado}
-        listaProducto={listaProducto}
-        setListaProducto={setListaProducto}
         abrirCerrarModalInsertar={abrirCerrarModalInsertar}
         modalInsertar={modalInsertar}
+        listaProducto={listaProducto}
+        setListaProducto={setListaProducto}
       />
       <ModalEliminarProducto
         productoSeleccionado={productoSeleccionado}
         abrirCerrarModalEliminar={abrirCerrarModalEliminar}
         modalEliminar={modalEliminar}
+        listaProducto={listaProducto}
+        setListaProducto={setListaProducto}
+       
       />
       <ModalEditarProducto
         setProductoSeleccionado={setProductoSeleccionado}
         productoSeleccionado={productoSeleccionado}
         abrirCerrarModalEditar={abrirCerrarModalEditar}
         modalEditar={modalEditar}
+        listaProducto={listaProducto}
+        setListaProducto={setListaProducto}
       />
     </>
   );

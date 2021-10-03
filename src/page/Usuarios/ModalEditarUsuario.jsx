@@ -7,6 +7,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import URL from "../../configuration/URL";
 import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
+import valorToken from "../../configuration/valorToken";
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -24,6 +25,8 @@ const ModalEditarUsuario = ({
 
 }) => {
 
+  const token = valorToken()
+
   const initialFormState = {
     id: null,
     nombre: "",
@@ -38,7 +41,12 @@ const ModalEditarUsuario = ({
   const buscarUsuario = async () => {
     
       try {
-        await axios.get(`${URL}/buscarUsuario/${usuarioSeleccionado.id}`, {}).then((response) => {
+        await axios.get(`${URL}/buscarUsuario/${usuarioSeleccionado.id}`, {
+          headers: 
+          {
+            Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
+          }
+        }).then((response) => {
           setEditarUsuario({
             nombre: response.data.data[0].nombre,
             apellido: response.data.data[0].apellido,

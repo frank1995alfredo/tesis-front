@@ -1,6 +1,16 @@
+
+import { useEffect, useState } from "react"
+import useAuth from "../../auth/useAuth";
 import PageContent from "../PageContent/PageContent";
+import useToken from "../../configuration/useToken"
+import valorToken from "../../configuration/valorToken";
+import URL from "../../configuration/URL";
 
 const Navbar = ({children, nombre}) => {
+
+  const token = valorToken()
+
+  const auth = useAuth()
     
   const Toggle = () => {
     let el = document.getElementById("wrapper");
@@ -16,6 +26,38 @@ const Navbar = ({children, nombre}) => {
    
   }
 }    
+
+const [nombreUsuario, setNombreUsuario] = useState([])
+
+useEffect(() => {
+  const abortController = new AbortController();
+  
+  //LISTAR AFECTACION
+  const usuario = async () => {
+    try {
+      let response = await fetch(`${URL}/nombreUsuario`, {
+        signal: abortController.signal,
+        headers: 
+        {
+          Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
+        }
+      });
+      response = await response.json();
+      setNombreUsuario(response.data[0].usuario);
+      console.log(response.data[0].usuario)
+    } catch (error) {
+      console.log(error);
+      if (abortController.signal.aborted) {
+        console.log(abortController.signal.aborted);
+      } else throw error;
+    }
+  };
+
+  usuario();
+  return () => abortController.abort();
+}, []);
+
+
 
   return (
     <PageContent>
@@ -51,24 +93,14 @@ const Navbar = ({children, nombre}) => {
                 role="button"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
-              >
-                <i className="fas fa-user me-2"></i>John Doe
+              > {nombreUsuario} {" "}
+                <i className="fas fa-user me-2"></i>
               </a>
               <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
                 <li>
-                  <a className="dropdown-item" href="#">
-                    Profile
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="#">
-                    Settings
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="#">
-                    Logout
-                  </a>
+                  <button className="dropdown-item" onClick={() => auth.logout()}>
+                    Salir
+                  </button>
                 </li>
               </ul>
             </li>

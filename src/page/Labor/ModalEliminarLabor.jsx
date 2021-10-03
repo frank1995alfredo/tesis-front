@@ -6,6 +6,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
 import URL from "../../configuration/URL";
+import valorToken from "../../configuration/valorToken";
 
 const ModalEliminarLabor = ({
   laborSeleccionado,
@@ -15,10 +16,17 @@ const ModalEliminarLabor = ({
   setListaLabor
  
 }) => {
+
+  const token = valorToken()
  
   const eliminarLabor = async () => {
 
-    await axios.delete(`${URL}/eliminarTipoLabor/` + laborSeleccionado.id)
+    await axios.delete(`${URL}/eliminarTipoLabor/` + laborSeleccionado.id, {
+      headers: 
+        {
+          Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
+        }
+    })
       .then((response) => {
         setListaLabor(
           listaLabor.filter((labor) => labor.id !== laborSeleccionado.id)

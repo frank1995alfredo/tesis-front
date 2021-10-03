@@ -6,6 +6,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import URL from "../../configuration/URL";
 import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
+import valorToken from "../../configuration/valorToken";
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -21,6 +22,9 @@ const ModalAgregarLabor = ({
   listaLabor,
   setListaLabor
 }) => {
+
+  const token = valorToken()
+  
   const styles = useStyles();
 
   const handleChange = (e) => {
@@ -33,7 +37,12 @@ const ModalAgregarLabor = ({
 
   const agregarLabor = async () => {
     await axios
-      .post(`${URL}/crearTipoLabor`, laborSeleccionado)
+      .post(`${URL}/crearTipoLabor`, laborSeleccionado, {
+        headers: 
+        {
+          Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
+        }
+      })
       .then((response) => {
         setListaLabor(listaLabor.concat(response.data.data[0]));
         Alerta.fire({

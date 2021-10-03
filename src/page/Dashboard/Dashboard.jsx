@@ -3,9 +3,12 @@ import Navbar from "../../components/Navbar/Navbar";
 import { Bar, Pie } from "react-chartjs-2";
 import URL from "../../configuration/URL";
 import axios from "axios";
+import valorToken from "../../configuration/valorToken";
 
 const Dashboard = () => {
 
+
+  const token = valorToken()
 
   var y = new Date().getFullYear();
 
@@ -20,6 +23,10 @@ const Dashboard = () => {
     try {
       let response = await fetch(`${URL}/listaProductoPorMes`, {
         signal: abortController.signal,
+        headers: 
+        {
+          Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
+        }
       });
       response = await response.json();
       setListaCompras(response.data);
@@ -36,6 +43,10 @@ const Dashboard = () => {
     try {
       let response = await fetch(`${URL}/listaProductoGastosPorMes`, {
         signal: abortController.signal,
+        headers: 
+        {
+          Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
+        }
       });
       response = await response.json();
       setListaGastos(response.data);
@@ -94,11 +105,9 @@ const Dashboard = () => {
     },
   };
 
-  let signo = '$';
   const data3 = {
     labels: 
-    listaGastos.map(gasto => (gasto.mes)) 
-    ,
+    listaGastos.map(gasto => (gasto.mes)),
     datasets: [
       {
         label: `Gastos de productos por mes del año ${y}`,
@@ -111,6 +120,7 @@ const Dashboard = () => {
           "rgba(153, 102, 255, 0.2)",
           "rgba(255, 159, 64, 0.2)",
         ],
+        
         borderColor: [
           "rgba(255, 99, 132, 1)",
           "rgba(54, 162, 235, 1)",

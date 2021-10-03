@@ -6,6 +6,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import URL from "../../configuration/URL";
 import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
+import valorToken from "../../configuration/valorToken";
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -21,6 +22,10 @@ const ModalAgregarRecursos = ({
   listaRecurso,
   setListaRecurso
 }) => {
+
+  
+  const token = valorToken()
+
   const styles = useStyles();
 
   const handleChange = (e) => {
@@ -33,7 +38,12 @@ const ModalAgregarRecursos = ({
 
   const agregarRecurso = async () => {
     await axios
-      .post(`${URL}/crearRecurso`, recursosSeleccionado)
+      .post(`${URL}/crearRecurso`, recursosSeleccionado, {
+        headers: 
+        {
+          Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
+        }
+      })
       .then((response) => {
         setListaRecurso(listaRecurso.concat(response.data.data[0]));
         Alerta.fire({

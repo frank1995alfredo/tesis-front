@@ -9,6 +9,7 @@ import ModalEditarAfectacion from "./ModalEditarAfectacion";
 import Chip from "@material-ui/core/Chip";
 import { Link } from "react-router-dom";
 import URL from "../../configuration/URL";
+import valorToken from "../../configuration/valorToken";
 
 const columns = [
   {
@@ -41,6 +42,8 @@ const columns = [
 
 
 const ListaAfectacion = () => {
+
+  const token = valorToken()
 
   const [listaAfectacion, setListaAfectacion] = useState([]);
 
@@ -84,6 +87,10 @@ const ListaAfectacion = () => {
       try {
         let response = await fetch(`${URL}/listaAfectacion`, {
           signal: abortController.signal,
+          headers: 
+          {
+            Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
+          }
         });
         response = await response.json();
         setListaAfectacion(response.data);

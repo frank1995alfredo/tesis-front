@@ -13,6 +13,11 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import useAuth from "../../auth/useAuth";
+import useToken from "../../configuration/useToken"
+import useUser from "../../configuration/useUser";
+import { useHistory } from "react-router-dom";
+import Alerta from "../../components/Alerts/Alerta";
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -20,7 +25,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+
 const Login = () => {
+  const auth = useAuth();  
+
+  
+  const data = localStorage.getItem('user');
+  //console.log(data)
+
+   const history = useHistory()
+ 
 
 
   const inititalFormState = {
@@ -28,7 +42,9 @@ const Login = () => {
     password: "",
   }
 
-  const [token, setToken] = useState("")
+  const {token, setToken} = useToken()
+  const {tipoUser, setTipoUser} = useUser()
+
   const [dataLogin, setDataLogin] = useState(inititalFormState);
 
   const classes = useStyles();
@@ -49,15 +65,28 @@ const Login = () => {
   };
 
   const login = async () => {
+    auth.login() 
+
 
     await axios.post(`${URL}/login`, dataLogin)
       .then((response) => {
-        setToken(response);
-        console.log(response.data.access_token)
+
+        setToken(response.data.token)
+        setTipoUser(response.data.tipouser)
+        
+        if(auth) {
+          history.push('/')
+        }
+        console.log(token)
+        console.log(response.data.tipouser)
         setDataLogin(inititalFormState)
       })
       .catch((error) => {
-        console.log(error);
+        Alerta.fire({
+          icon: "error",
+          title: "Datos incorrectos.",
+        });
+        console.log(error)
       });
   };
   
@@ -78,7 +107,9 @@ const Login = () => {
           <div className="row justify-content-center ">
             <div className="col-md-3 col-ls-3 position-absolute top-50 start-50 translate-middle">
               <div className="card">
+                
                 <div className="card-body">
+                  
                   <div class="mb-3">
                   <TextField
                     className={classes.inputMaterial}
@@ -122,7 +153,7 @@ const Login = () => {
                   </FormControl>
                   </div>
                  
-                  <button type="button" class="btn btn-success btn-sm" onClick={() => login()}>
+                  <button type="submit" class="btn btn-success btn-sm" onClick={() => login()}>
                     Ingresar
                   </button>
                 </div>

@@ -1,5 +1,4 @@
 
-
 import { Button } from "@material-ui/core";
 import Modal from "../../components/Modals/Modal";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -8,21 +7,22 @@ import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
 import URL from "../../configuration/URL";
 
-const ModalEliminarProducto = ({
-  productoSeleccionado,
+const ModalEliminarAPProducto = ({
+  approductoSeleccionado,
   modalEliminar,
   abrirCerrarModalEliminar,
-  listaProducto,
-  setListaProducto
+  listaAPProducto,
+  setListaAPProducto
  
 }) => {
 
-  const eliminarProducto = async () => {
+  const eliminarAPProducto = async () => {
 
-    await axios.delete(`${URL}/eliminarProducto/` + productoSeleccionado.id)
+    await axios.delete(`${URL}/eliminarAfectacionParcelaProducto/` + approductoSeleccionado.id)
+    
       .then((response) => {
-        setListaProducto(
-          listaProducto.filter((producto) => producto.id !== productoSeleccionado.id)
+        setListaAPProducto(
+          listaAPProducto.filter((approducto) => approducto.id !== approductoSeleccionado.id)
         );
         Alerta.fire({
           icon: "success",
@@ -33,20 +33,21 @@ const ModalEliminarProducto = ({
       .catch((error) => {
         console.log(error);
       });
+
   };
 
   return (
     <Modal open={modalEliminar} close={abrirCerrarModalEliminar}>
       <p>
-        Está seguro que desea eliminar la afectación{" "}
-        <b>{productoSeleccionado.nombre}</b>?{" "}
+        Está seguro que desea eliminar el parcela{" "}
+        <b>{approductoSeleccionado.numero}</b>?{" "}
       </p>
       <div align="right">
         <Button
           size="small" 
           variant="contained"
           color="primary"
-          onClick={() => eliminarProducto()}
+          onClick={() => eliminarAPProducto()}
         >
           <DeleteIcon /> Eliminar{" "}
         </Button>{" "}
@@ -60,7 +61,8 @@ const ModalEliminarProducto = ({
         </Button>
       </div>
     </Modal>
+    
   );
 };
 
-export default ModalEliminarProducto;
+export default ModalEliminarAPProducto;

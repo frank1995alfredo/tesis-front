@@ -6,6 +6,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import URL from "../../configuration/URL";
 import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
+import valorToken from "../../configuration/valorToken";
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -22,6 +23,8 @@ const ModalEditarRecursos = ({
   setListaRecurso
 
 }) => {
+
+  const token = valorToken()
   
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -34,7 +37,12 @@ const ModalEditarRecursos = ({
  
   
   const editarRecurso = async() => {
-    await axios.put(`${URL}/editarRecurso/`+ recursosSeleccionado.id, recursosSeleccionado)
+    await axios.put(`${URL}/editarRecurso/`+ recursosSeleccionado.id, recursosSeleccionado, {
+      headers: 
+      {
+        Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
+      }
+    })
     .then(response => {
       let recursoNuevo = listaRecurso;
       recursoNuevo.map(recurso => {

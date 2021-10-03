@@ -21,7 +21,7 @@ import Alerta from "../../components/Alerts/Alerta";
 import PropTypes from "prop-types";
 import URL from "../../configuration/URL";
 import { useHistory } from "react-router-dom";
-import valorToken from "../../configuration/valorToken";
+import { Checkbox } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -35,99 +35,81 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const FormEditarActividad = () => {
-
-  const token = valorToken()
-
+const FormeditarAfectacionParcela = () => {
   const initialFormState = {
     id: null,
-    idtipolabor: 0,
-    idparcela_1: 0,
-    fecha_inicio: "",
-    fecha_fin: "",
-    avance: "",
-    total_actividad: 0.0,
-    idrecurso: 0,
-    cantidad: 0,
-    costo: 0.0,
+    idafectacion: 0,
+    idparcela: 0,
+    fecha: "",
+    observacion: "",
+    estado: 0,
   };
 
   let { id } = useParams();
-  const [editarActividad, setEditarActividad] = useState(initialFormState);
-
-  const [tipoLabor, setTipoLabor] = useState([]);
+  const [editarAfectacionParcela, setEditarAfectacionParcela] = useState(initialFormState);
+  const [producto, setProducto] = useState([]);
+  const [afectacion, setAfectacion] = useState([]);
   const [parcela, setParcela] = useState([]);
   const [recurso, setRecurso] = useState([]);
 
   const countRef = useRef(0);
 
-  const buscarActividad = async () => {
+  async function buscarAfectacionParcela() {
     try {
-      await axios.get(`${URL}/buscarActividad/${id}`, {}).then((response) => {
-        setEditarActividad({
-          idtipolabor: response.data.data[0].idtipolabor,
-          idparcela_1: response.data.data[0].idparcela,
-          idrecurso: response.data.data[0].idrecurso,
-          fecha_inicio: response.data.data[0].fecha_inicio,
-          fecha_fin: response.data.data[0].fecha_fin,
-          avance: response.data.data[0].avance,
-          total_actividad: response.data.data[0].total_actividad,
-          cantidad: response.data.data[0].cantidad,
-          costo: response.data.data[0].costo,
-        });
+      let response = await fetch(`${URL}/buscarAfectacionParcela`);
+      response = await response.json();
+      setProducto(response.data);
 
-        console.log(response.data)
-      });
+      for (let i = 0; i < response.data.length; i++) {
+        if (response.data[i].id == id) {
+          let dall = {
+            id: id,
+            idafectacion: response.data[i].idafectacion,
+            idparcela: response.data[i].idparcela,
+            fecha: response.data[i].fecha,
+            observacion: response.data[i].observacion,
+            estado: response.data[i].estado,
+          };
+          setEditarAfectacionParcela(dall);
+          
+          
+        }
+      }
     } catch (error) {
       console.log(error);
     }
   };
-
   const peticionEditar = async () => {
-    let data = {
-      idtipolabor: editarActividad.idtipolabor,
-      idparcela_1: editarActividad.idparcela_1,
-      idrecurso: editarActividad.idrecurso,
-      fecha_inicio: editarActividad.fecha_inicio,
-      fecha_fin: editarActividad.fecha_fin,
-      avance: editarActividad.avance,
-      total_actividad: editarActividad.total_actividad,
-      cantidad: editarActividad.cantidad,
-      costo: editarActividad.costo,
-    };
+    console.log(editarAfectacionParcela.id)
+    console.log(editarAfectacionParcela.idafectacion)
+    console.log(editarAfectacionParcela.idparcela)
+    console.log(editarAfectacionParcela.fecha)
+    console.log(editarAfectacionParcela.observacion)
+    console.log(editarAfectacionParcela.estado)
     try {
       await axios
-        .put(`${URL}/editarActividad/${id}`, data, {
-          headers: 
-          {
-            Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
-          }
-        })
+        .put(`${URL}/editarAfectacionParcela/${id}`, editarAfectacionParcela, {})
         .then((response) => {
-          setEditarActividad(initialFormState);
+            setEditarAfectacionParcela(initialFormState);
           Alerta.fire({
             icon: "success",
             title: "Registro editado.",
           });
-          console.log(response.data);
+         
         });
     } catch (error) {
       console.log(error);
     }
   };
-
+  
+  //////////////////////////////////////////////////////////////
+  //Codigo funciona
   //funcion para listar los labores
-  async function TipoLabor() {
+  async function Afectacion() {
     try {
-      let response = await fetch(`${URL}/listaTipoLabor`, {
-        headers: 
-        {
-          Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
-        }
-      });
+      let response = await fetch(`${URL}/listaAfectacion`);
       response = await response.json();
-      setTipoLabor(response.data);
-      console.log(response.data);
+      setAfectacion(response.data);
     } catch (error) {
       console.log(error);
     }
@@ -136,42 +118,21 @@ const FormEditarActividad = () => {
   //funcion para listar las parcelas
   async function Parcela() {
     try {
-      let response = await fetch(`${URL}/listaParcela`, {
-        headers: 
-        {
-          Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
-        }
-      });
+      let response = await fetch(`${URL}/listaParcela`);
       response = await response.json();
       setParcela(response.data);
-      console.log(response.data);
     } catch (error) {
       console.log(error);
     }
   }
-
+  ///////////////////////////////////////////////////////////
   //funcion para listar los recursos
-  async function Recurso() {
-    try {
-      let response = await fetch(`${URL}/listaRecurso` ,{
-        headers: 
-        {
-          Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
-        }
-      });
-      response = await response.json();
-      setRecurso(response.data);
-      console.log(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  }
 
   useEffect(() => {
-    buscarActividad();
-    TipoLabor();
+    buscarAfectacionParcela();
+    peticionEditar();
+    Afectacion();
     Parcela();
-    Recurso();
   }, [countRef]);
 
   const select = makeStyles((theme) => ({
@@ -191,8 +152,8 @@ const FormEditarActividad = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setEditarActividad({ ...editarActividad, [name]: value });
-    console.log(editarActividad);
+    setEditarAfectacionParcela({ ...editarAfectacionParcela, [name]: value });
+    console.log(editarAfectacionParcela);
   };
 
   var hoy = new Date();
@@ -289,33 +250,13 @@ const FormEditarActividad = () => {
                     <Grid item xs={12} lg={2} sm={3}>
                       <FormControl className={classesSelect.formControl}>
                         <InputLabel id="demo-simple-select-label">
-                          Tipo labor
-                        </InputLabel>
-                        <Select
-                          labelId="demo-simple-select-label"
-                          id="demo-simple-select"
-                          name="idtipolabor"
-                          value={editarActividad.idtipolabor}
-                          onChange={handleInputChange}
-                        >
-                          {tipoLabor.map((labor, index) => (
-                            <MenuItem value={labor.id} key={index}>
-                              {labor.nombre}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                    <Grid item xs={12} lg={2} sm={3}>
-                      <FormControl className={classesSelect.formControl}>
-                        <InputLabel id="demo-simple-select-label">
-                          Número parcela
+                          Parcela Afectada
                         </InputLabel>
                         <Select
                           labelId="demo-simple-select-label"
                           id="demo-simple-select"
                           name="idparcela"
-                          value={editarActividad.idparcela_1}
+                          value={editarAfectacionParcela.idparcela}
                           onChange={handleInputChange}
                         >
                           {parcela.map((parce, index) => (
@@ -326,13 +267,33 @@ const FormEditarActividad = () => {
                         </Select>
                       </FormControl>
                     </Grid>
+                    <Grid item xs={12} lg={2} sm={3}>
+                      <FormControl className={classesSelect.formControl}>
+                        <InputLabel id="demo-simple-select-label">
+                          Afectacion
+                        </InputLabel>
+                        <Select
+                          labelId="demo-simple-select-label"
+                          id="demo-simple-select"
+                          name="idafectacion"
+                          value={editarAfectacionParcela.idafectacion}
+                          onChange={handleInputChange}
+                        >
+                          {afectacion.map((afec, index) => (
+                            <MenuItem value={afec.id} key={index}>
+                              {afec.nombre_afectacion}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Grid>
                     <Grid item xs={5} lg={2} sm={3}>
                       <form className={classes.container} noValidate>
                         <TextField
                           id="date"
-                          label="Fecha inicio"
+                          label="Fecha"
                           type="date"
-                          value={editarActividad.fecha_inicio}
+                          value={editarAfectacionParcela.fecha}
                           name="fecha_inicio"
                           onChange={handleInputChange}
                           className={classes.textField}
@@ -345,82 +306,35 @@ const FormEditarActividad = () => {
                     <Grid item xs={12} lg={2} sm={3}>
                       <form className={classes.container} noValidate>
                         <TextField
-                          id="date"
-                          label="Fecha fin"
-                          type="date"
-                          value={editarActividad.fecha_fin}
-                          name="fecha_fin"
+                          required
+                          id="observacion"
+                          name="observacion"
+                          label="Obasevacion"
+                          value={editarAfectacionParcela.observacion}
                           onChange={handleInputChange}
                           className={classes.textField}
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
+                          fullWidth
                         />
                       </form>
                     </Grid>
-
-                    <Grid item xs={12} lg={2} sm={2}>
-                      <TextField
-                        required
-                        id="avance"
-                        name="avance"
-                        label="Avance"
-                        value={editarActividad.avance}
-                        onChange={handleInputChange}
-                        fullWidth
-                      />
-                    </Grid>
-                    <Grid item xs={12} lg={2} sm={2}>
-                      <TextField
-                        required
-                        id="total_actividad"
-                        name="total_actividad"
-                        label="Total Actividad"
-                        value={editarActividad.total_actividad}
-                        onChange={handleInputChange}
-                        fullWidth
-                      />
-                    </Grid>
                     <Grid item xs={12} lg={2} sm={3}>
                       <FormControl className={classesSelect.formControl}>
-                        <InputLabel id="demo-simple-select-label">
-                          Recurso
+                        <InputLabel id="demo-simple-checkbox">
+                          Afectacion
                         </InputLabel>
-                        <Select
-                          labelId="demo-simple-select-label"
-                          id="demo-simple-select"
-                          name="idrecurso"
-                          value={editarActividad.idrecurso}
+                        <br />
+                        <br />
+                        <br />
+                        <input
+                          type="checkbox"
+                          name="estado"
+                          checked={editarAfectacionParcela.estado}
+                          
                           onChange={handleInputChange}
-                        >
-                          {recurso.map((recur, index) => (
-                            <MenuItem value={recur.id} key={index}>
-                              {recur.nombre}
-                            </MenuItem>
-                          ))}
-                        </Select>
+                        />
                       </FormControl>
                     </Grid>
-                    <Grid item xs={12} lg={2} sm={3}>
-                      <TextField
-                        label="Cantidad"
-                        pattern="[0-9]{0,13}"
-                        onChange={handleInputChange}
-                        value={editarActividad.cantidad}
-                        name="cantidad"
-                        id="formatted-numberformat-input"
-                      />
-                    </Grid>
-                    <Grid item xs={12} lg={2} sm={3}>
-                      <TextField
-                        label="Costo"
-                        pattern="[0-9]{0,13}"
-                        onChange={handleInputChange}
-                        value={editarActividad.costo}
-                        name="costo"
-                        id="formatted-numberformat-input"
-                      />
-                    </Grid>
+
                     <Grid item xs={12} sm={12}>
                       <Button
                         variant="contained"
@@ -450,4 +364,4 @@ const FormEditarActividad = () => {
   );
 };
 
-export default FormEditarActividad;
+export default FormeditarAfectacionParcela;

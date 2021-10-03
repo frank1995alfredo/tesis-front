@@ -7,6 +7,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
 import URL from "../../configuration/URL";
+import valorToken from "../../configuration/valorToken";
 
 const ModalEliminarRecursos = ({
   recursosSeleccionado,
@@ -17,9 +18,16 @@ const ModalEliminarRecursos = ({
  
 }) => {
 
+  const token = valorToken()
+
   const eliminarRecurso = async () => {
 
-    await axios.delete(`${URL}/eliminarRecurso/` + recursosSeleccionado.id)
+    await axios.delete(`${URL}/eliminarRecurso/` + recursosSeleccionado.id, {
+      headers: 
+      {
+        Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
+      }
+    })
       .then((response) => {
         setListaRecurso(
           listaRecurso.filter((recurso) => recurso.id !== recursosSeleccionado.id)

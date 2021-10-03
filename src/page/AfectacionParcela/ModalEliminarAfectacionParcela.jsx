@@ -1,5 +1,4 @@
 
-
 import { Button } from "@material-ui/core";
 import Modal from "../../components/Modals/Modal";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -8,21 +7,22 @@ import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
 import URL from "../../configuration/URL";
 
-const ModalEliminarProducto = ({
-  productoSeleccionado,
+const ModalEliminarAfectacionParcela = ({
+  afectacionparcelaSeleccionado,
   modalEliminar,
   abrirCerrarModalEliminar,
-  listaProducto,
-  setListaProducto
+  listaAfectacionParcela,
+  setListaAfectacionParcela
  
 }) => {
 
-  const eliminarProducto = async () => {
+  const eliminarAfectacionParcela = async () => {
 
-    await axios.delete(`${URL}/eliminarProducto/` + productoSeleccionado.id)
+    await axios.delete(`${URL}/eliminarAfectacionParcela/` + afectacionparcelaSeleccionado.id)
+    
       .then((response) => {
-        setListaProducto(
-          listaProducto.filter((producto) => producto.id !== productoSeleccionado.id)
+        setListaAfectacionParcela(
+          listaAfectacionParcela.filter((afectacionparcela) => afectacionparcela.id !== afectacionparcelaSeleccionado.id)
         );
         Alerta.fire({
           icon: "success",
@@ -33,20 +33,21 @@ const ModalEliminarProducto = ({
       .catch((error) => {
         console.log(error);
       });
+
   };
 
   return (
     <Modal open={modalEliminar} close={abrirCerrarModalEliminar}>
       <p>
-        Está seguro que desea eliminar la afectación{" "}
-        <b>{productoSeleccionado.nombre}</b>?{" "}
+        Está seguro que desea eliminar el parcela{" "}
+        <b>{afectacionparcelaSeleccionado.numero}</b>?{" "}
       </p>
       <div align="right">
         <Button
           size="small" 
           variant="contained"
           color="primary"
-          onClick={() => eliminarProducto()}
+          onClick={() => eliminarAfectacionParcela()}
         >
           <DeleteIcon /> Eliminar{" "}
         </Button>{" "}
@@ -63,4 +64,5 @@ const ModalEliminarProducto = ({
   );
 };
 
-export default ModalEliminarProducto;
+export default ModalEliminarAfectacionParcela;
+

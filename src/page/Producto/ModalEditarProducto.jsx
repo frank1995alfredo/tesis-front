@@ -3,6 +3,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import Modal from "../../components/Modals/Modal";
 import CancelIcon from "@material-ui/icons/Cancel";
 import EditIcon from '@material-ui/icons/Edit';
+import URL from "../../configuration/URL";
+import axios from "axios";
+import Alerta from "../../components/Alerts/Alerta";
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -15,6 +18,8 @@ const ModalEditarProducto = ({
   abrirCerrarModalEditar,
   productoSeleccionado,
   setProductoSeleccionado,
+  listaProducto,
+  setListaProducto
 
 }) => {
   
@@ -27,6 +32,31 @@ const ModalEditarProducto = ({
   };
   const styles = useStyles();
 
+  const editarProducto = async() => {
+    await axios.put(`${URL}/editarProducto/`+ productoSeleccionado.id, productoSeleccionado)
+    .then(response => {
+      let productoNuevo = listaProducto;
+      productoNuevo.map(producto => {
+        if(producto.id === productoSeleccionado.id) {
+          producto.nombre = productoSeleccionado.nombre;
+          producto.fecha_compra = productoSeleccionado.fecha_compra;
+          producto.fecha_caducidad = productoSeleccionado.fecha_caducidad;
+          producto.precio = productoSeleccionado.precio;
+          producto.cantidad = productoSeleccionado.cantidad;
+          producto.descripcion = productoSeleccionado.descripcion;
+        }
+      });
+      setListaProducto(productoNuevo);
+      Alerta.fire({
+        icon: "success",
+        title: "Registro editado.",
+      });
+      abrirCerrarModalEditar();
+    }).catch(error => {
+      console.log(error);
+    })
+  }  
+
   return (
     <Modal open={modalEditar} close={abrirCerrarModalEditar}>
       <h3>Editar Producto</h3>
@@ -37,49 +67,56 @@ const ModalEditarProducto = ({
         value={productoSeleccionado.nombre}
         onChange={handleChange}
       />
+      <br />
       <TextField
+        id="date"
         className={styles.inputMaterial}
-        label="Fecha_compra"
+        label="Fecha de Compra"
+        type="date"
         name="fecha_compra"
-        value={productoSeleccionado.nombre}
+        defaultValue="2017-05-24"
+        value={productoSeleccionado.fecha_compra}
         onChange={handleChange}
+        
       />
+      
+      <br />
       <TextField
+        id="date"
         className={styles.inputMaterial}
-        label="Fecha_caducidad"
+        label="Fecha de Caducidad"
+        type="date"
         name="fecha_caducidad"
-        value={productoSeleccionado.nombre}
+        defaultValue="2017-05-24"
+        value={productoSeleccionado.fecha_caducidad}
         onChange={handleChange}
+        
       />
+      <br />
+      
       <TextField
         className={styles.inputMaterial}
         label="Precio"
         name="precio"
-        value={productoSeleccionado.nombre}
+        value={productoSeleccionado.precio}
         onChange={handleChange}
       />
+      <br />
       <TextField
         className={styles.inputMaterial}
         label="Cantidad"
         name="cantidad"
-        value={productoSeleccionado.nombre}
+        value={productoSeleccionado.cantidad}
         onChange={handleChange}
       />
+      <br />
       <TextField
         className={styles.inputMaterial}
-        label="Descripcion"
+        label="Descripción"
         name="descripcion"
-        value={productoSeleccionado.nombre}
+        value={productoSeleccionado.descripcion}
         onChange={handleChange}
       />
-      <TextField
-        className={styles.inputMaterial}
-        label="Estado"
-        name="estado"
-        value={productoSeleccionado.nombre}
-        onChange={handleChange}
-      />
-      
       <br />
       <br />
       <div align="right">
@@ -87,7 +124,7 @@ const ModalEditarProducto = ({
           variant="contained"
           color="primary"
           size="small"
-          //onClick={() => editarCategoria()}
+          onClick={() => editarProducto()}
         >
           {" "}
           <EditIcon/>

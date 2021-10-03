@@ -13,13 +13,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+
 const ModalAgregarProducto = ({
   modalInsertar,
   abrirCerrarModalInsertar,
   setProductoSeleccionado,
   productoSeleccionado,
   listaProducto,
-  setListaProducto,
+  setListaProducto
 }) => {
   const styles = useStyles();
 
@@ -29,7 +30,6 @@ const ModalAgregarProducto = ({
       ...prevState,
       [name]: value,
     }));
-    console.log(productoSeleccionado);
   };
 
   const agregarProducto = async () => {
@@ -47,6 +47,7 @@ const ModalAgregarProducto = ({
         console.log(error);
       });
   };
+
   return (
     <Modal open={modalInsertar} close={abrirCerrarModalInsertar}>
       <h3>Nuevo Producto</h3>
@@ -56,7 +57,7 @@ const ModalAgregarProducto = ({
         name="nombre"
         onChange={handleChange}
       />
-
+      <br />
       <TextField
         id="date"
         label="Fecha de Compra"
@@ -65,50 +66,47 @@ const ModalAgregarProducto = ({
         name="fecha_compra"
         onChange={handleChange}
         className={styles.inputMaterial}
-      />
-      
+        />
+      <br />
       <TextField
         id="date"
-        label="Fecha_caducidad"
+        label="Fecha de caducidad"
         type="date"
         defaultValue="2017-05-24"
         name="fecha_caducidad"
         onChange={handleChange}
         className={styles.inputMaterial}
-      />
-
+        />
+      <br />
       <TextField
         className={styles.inputMaterial}
         label="Precio"
         name="precio"
         onChange={handleChange}
       />
+      <br />
       <TextField
         className={styles.inputMaterial}
         label="Cantidad"
         name="cantidad"
         onChange={handleChange}
       />
+      <br />
       <TextField
         className={styles.inputMaterial}
-        label="Descripcion"
+        label="Descripción"
         name="descripcion"
         onChange={handleChange}
       />
-      <TextField
-        className={styles.inputMaterial}
-        label="Estado"
-        name="estado"
-        onChange={handleChange}
-      />
-
       <br />
+
       <br />
       <div align="right">
         <Button
           variant="contained"
           color="primary"
           size="small"
+          
           onClick={() => agregarProducto()}
         >
           {" "}
@@ -128,5 +126,8 @@ const ModalAgregarProducto = ({
     </Modal>
   );
 };
+
+
+
 
 export default ModalAgregarProducto;

@@ -6,6 +6,7 @@ import ModalAgregarLabor from "./ModalAgregarLabor";
 import ModalEditarLabor from "./ModalEditarLabor";
 import { Link } from "react-router-dom";
 import URL from "../../configuration/URL";
+import valorToken from "../../configuration/valorToken";
 
 const columns = [
   {
@@ -20,6 +21,8 @@ const columns = [
 
 
 const ListaLabor = () => {
+
+  const token = valorToken()
   
   const [listaLabor, setListaLabor] = useState([]);
 
@@ -62,6 +65,10 @@ const ListaLabor = () => {
       try {
         let response = await fetch(`${URL}/listaTipoLabor`, {
           signal: abortController.signal,
+          headers: 
+          {
+            Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
+          }
         });
         response = await response.json();
         setListaLabor(response.data);

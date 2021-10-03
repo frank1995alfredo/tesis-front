@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import MaterialTable from "material-table";
-import { green } from "@material-ui/core/colors";
 import Navbar from "../../components/Navbar/Navbar";
-import ModalEliminarActividad from "./ModalEliminarActividad";
-import Chip from "@material-ui/core/Chip";
+import { green, red } from "@material-ui/core/colors";
+import ModalEliminarAfectacionParcela from "./ModalEliminarAfectacionParcela";
 import { Link } from "react-router-dom";
 import URL from "../../configuration/URL";
+import Chip from "@material-ui/core/Chip";
 import { useHistory } from "react-router-dom";
 import valorToken from "../../configuration/valorToken";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
 
 const columns = [
   {
@@ -17,32 +16,20 @@ const columns = [
     render: (rowData) => rowData.tableData.id + 1,
   },
   {
-    title: "Tipo Labor",
-    field: "nombre",
-  },
-  {
     title: "Parcela",
     field: "numero",
   },
   {
-    title: "Recurso",
-    field: "recurso",
+    title: "Afectación",
+    field: "nombre_afectacion",
   },
   {
-    title: "Fecha Inicio",
-    field: "fecha_inicio",
+    title: "Fecha",
+    field: "fecha",
   },
   {
-    title: "Fecha Fin",
-    field: "fecha_fin",
-  },
-  {
-    title: "Avance",
-    field: "avance",
-  },
-  {
-    title: "Total",
-    field: "total_actividad",
+    title: "Observación",
+    field: "observacion",
   },
   {
     title: "Estado",
@@ -55,28 +42,48 @@ const columns = [
           size="small"
         />
       ) : (
-        ""
+        <Chip
+          variant="outlined"
+          style={{ backgroundColor: red[500] }}
+          label="Inactivo"
+          size="small"
+        />
       ),
-  }, 
+  },
 ];
 
 
 
-const ListaActividades = () => {
+const ListaAfectacionParcela = () => {
 
   const token = valorToken()
+  
+  const [listaAfectacionParcela, setListaAfectacionParcela] = useState([]);
 
-  const [listaActividad, setListaActividad] = useState([]);
+
+  const [modalEliminar, setModalEliminar] = useState(false);
+  const [modalInsertar, setModalInsertar] = useState(false);
+  const [modalEditar, setModalEditar] = useState(false);
+  const [afectacionparcelaSeleccionado, setAfectacionParcelaSeleccionado] = useState({
+    id: 0,
+    numero: 0,
+    nombre_afectacion: "",
+    fecha: Date,
+    observacion: "",
+    estado: 0,
+  });
+
   const [listaPDF, setListaPDF] = useState([]);
-  const [usuario, setUsuario] = useState([])
+  const [usuario, setUsuario] = useState([]);
 
-   //reporte en pdf de la lista de actividades
-   const pdfActividades = () => {
+
+  //reporte en pdf de la lista de afectaciones
+  const pdfAfectacion = () => {
     const doc = new jsPDF();
     let hoy = new Date();
     let fechaActual =
       hoy.getFullYear() + "/" + (hoy.getMonth() + 1) + "/" + hoy.getDate();
-    doc.text("Reporte de actividades", 74, 10); //le damos las coordenadas x = 70, y = 10
+    doc.text("Reporte de afectaciones", 74, 10); //le damos las coordenadas x = 70, y = 10
     doc.text("Fecha: " + `${fechaActual}`, 10, 20);
     doc.text("Persona a cargo: " + usuario, 114, 20)
     doc.autoTable({
@@ -84,134 +91,133 @@ const ListaActividades = () => {
       styles: {
         halign: 'center'
     },
-      head: [["#", "Labor", "Trabajador","Recurso", "Total Recurso"]],
+      head: [["#", "Número Parcela", "Afectación", "Producto Usado", "Fecha Fumigación"]],
       body: listaPDF.map((lista, index) => [
         index + 1,
-        lista.labor,
-        lista.trabajador,
-        lista.recurso,
-        lista.total_parcial_recurso
+        lista.numero,
+        lista.nombre_afectacion,
+        lista.nombre,
+        lista.fecha
       ]),
     });
     let fechaActual2 =
       hoy.getFullYear() + "_" + (hoy.getMonth() + 1) + "_" + hoy.getDate();
-    doc.save("reporteActividades" + `${fechaActual2}` + ".pdf");
+    doc.save("reporteAfectaciones" + `${fechaActual2}` + ".pdf");
   };
 
-
-  const [modalEliminar, setModalEliminar] = useState(false);
-  const [actividadSeleccionada, setActividadSeleccionada] = useState({
-    id: 0,
-    nombre: "",
-    numero: "",
-    fecha_inicio: "",
-    fecha_fin: "",
-    avance: "",
-    total_actividad: 0.0
-  });
-
-  const seleccionarActividad = (actividad, caso) => {
-    setActividadSeleccionada(actividad);
+  const seleccionarAfectacionParcela = (afectacionparcela, caso) => {
+    setAfectacionParcelaSeleccionado(afectacionparcela);
 
     if (caso === "Eliminar") {
       abrirCerrarModalEliminar();
-    } else {
-      return;
+    } else{
+      abrirCerrarModalEditar();
     }
+    
+  };
+  //metodo para editar
+  const history = useHistory();
+  const handleUpdateClick = (id) => {
+    history.push(`/actividades/afectacionParcela/${id}/editarAfectacionparcela`);
+  };
+  const handleInsertClick = (id) => {
+    history.push(`/actividades/afectacionParcela/${id}/agregarAPProducto`);
+  };
+  const abrirCerrarModalInsertar = () => {
+    setModalInsertar(!modalInsertar);
   };
 
   const abrirCerrarModalEliminar = () => {
     setModalEliminar(!modalEliminar);
   };
 
+  const abrirCerrarModalEditar = () => {
+    setModalEditar(!modalEditar);
+  };
+
   useEffect(() => {
+
     const abortController = new AbortController();
-    
-    //LISTAR ACTIVIDAD
-    const listaActividad = async () => {
+
+    //LISTAR AfectacionParcela
+    const listaAfectacionParcelas = async () => {
       try {
-        let response = await fetch(`${URL}/listaActividad`, {
+        let response = await fetch(`${URL}/listaAfectacionParcela`, {
           signal: abortController.signal,
           headers: 
           {
             Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
           }
         });
-        
         response = await response.json();
-       
-        setListaActividad(response.data);
+        setListaAfectacionParcela(response.data);
       } catch (error) {
         console.log(error);
         if (abortController.signal.aborted) {
           console.log(abortController.signal.aborted);
         } else throw error;
-      }   
+      }
+
     };
 
-    //LISTAR ACTIVIDAD
-    const listaActividadPDF = async () => {
+    //LISTAR AfectacionParcela
+    const listaAfectacionParcelasPDF = async () => {
       try {
-        let response = await fetch(`${URL}/listaActividadPDF`, {
+        let response = await fetch(`${URL}/listaAfectacionPDF`, {
           signal: abortController.signal,
           headers: 
           {
             Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
           }
         });
-        
         response = await response.json();
-       
         setListaPDF(response.data);
         setUsuario(response.usuario)
-        console.log(response)
+        console.log(response.usuario)
       } catch (error) {
         console.log(error);
         if (abortController.signal.aborted) {
           console.log(abortController.signal.aborted);
         } else throw error;
-      }   
+      }
     };
 
-    listaActividad();
-    listaActividadPDF() 
-
+    listaAfectacionParcelas();
+    listaAfectacionParcelasPDF();
+    
     return () => abortController.abort();
   }, []);
 
-
-  //metodo para editar
-  const history = useHistory();
-  const handleUpdateClick = (id) => {
-    history.push(`/actividades/actividades/${id}/editarActividad`);
-  };
- 
   return (
     <>
-      <Navbar nombre="Actividades">
+      <Navbar nombre="Zona Afectada">
         <div className="container-fluid px-4">
           <div className="row">
-          <div className="col-auto">
-              <Link
-                to="/actividades/actividades/agregarActividad"
+            <div className="col-auto">
+            <Link
+                to="/actividades/afectacionParcela/agregarAfectacionParcela"
                 className="btn btn-primary btn-sm"
               >
                 <i className="fas fa-plus-circle "></i> Nueva Actividad
               </Link>
             </div>
             <div className="col-auto">
-              {" "}
-              <Link
-                to="/actividades"
-                type="button"
-                className="btn btn-secondary btn-sm"
+            <Link
+                to="/actividades/afectacionParcela/ListaAPProducto"
+                className="btn btn-primary btn-sm"
               >
+                <i className="fas fa-eye "></i> Ver Corecciones
+              </Link>
+            </div>
+            <div className="col-auto">
+            {" "}
+              <Link to="/actividades" type="button" className="btn btn-secondary btn-sm">
                 <i class="fas fa-arrow-left"></i> Regresar
               </Link>
             </div>
             <div className="col-auto">
-               <button className="btn btn-secondary btn-sm" target="_blank" onClick={ pdfActividades }>
-                    Reporte PDF
+               <button className="btn btn-secondary btn-sm"  target="_blank" onClick={ pdfAfectacion } >
+                   Reporte PDF
                </button>
             </div>
           </div>
@@ -219,30 +225,34 @@ const ListaActividades = () => {
             <div className="col">
               <MaterialTable
                 columns={columns}
-                data={listaActividad}
-                title="Lista de Actividades"
+                data={listaAfectacionParcela}
+                title="Lista de las zonas afectadas"
                 actions={[
                   {
                     icon: "edit",
-                    tooltip: "Editar Actividad",
+                    tooltip: "Editar AfectacionParcela",
                     onClick: (event, rowData) =>
                       handleUpdateClick(rowData.id),
                   },
                   {
                     icon: "delete",
-                    tooltip: "Eliminar Actividad",
+                    tooltip: "Eliminar Afectación",
                     onClick: (event, rowData) =>
-                      seleccionarActividad(rowData, "Eliminar"),
+                      seleccionarAfectacionParcela(rowData, "Eliminar"),
+                  },
+                  {
+                    icon: "add",
+                    tooltip: "Inserta una coreccion",
+                    onClick: (event, rowData) =>
+                    handleInsertClick(rowData.id),
                   },
                 ]}
                 options={{
                   actionsColumnIndex: -1,
-                  
                 }}
                 localization={{
                   header: {
                     actions: "Acciones",
-                    
                   },
                   toolbar: {
                     searchTooltip: 'Buscar',
@@ -261,15 +271,17 @@ const ListaActividades = () => {
           </div>
         </div>
       </Navbar>
-      <ModalEliminarActividad
-        actividadSeleccionada={actividadSeleccionada}
+     
+     <ModalEliminarAfectacionParcela
+        afectacionparcelaSeleccionado={afectacionparcelaSeleccionado}
         abrirCerrarModalEliminar={abrirCerrarModalEliminar}
         modalEliminar={modalEliminar}
-        listaActividad={listaActividad}
-        setListaActividad={setListaActividad}
+        listaAfectacionParcela={listaAfectacionParcela}
+        setListaAfectacionParcela={setListaAfectacionParcela}
+       
       />
     </>
   );
 };
 
-export default ListaActividades;
+export default ListaAfectacionParcela;

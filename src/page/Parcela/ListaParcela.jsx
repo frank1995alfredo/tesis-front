@@ -6,6 +6,7 @@ import ModalAgregarParcela from "./ModalAgregarParcela";
 import ModalEditarParcela from "./ModalEditarParcela";
 import { Link } from "react-router-dom";
 import URL from "../../configuration/URL";
+import valorToken from "../../configuration/valorToken";
 
 const columns = [
   {
@@ -27,6 +28,8 @@ const columns = [
 ];
 
 const ListaParcela = () => {
+
+  const token = valorToken()
 
   const [listaParcela, setListaParcela] = useState([]);
 
@@ -70,6 +73,10 @@ const ListaParcela = () => {
       try {
         let response = await fetch(`${URL}/listaParcela`, {
           signal: abortController.signal,
+          headers: 
+          {
+            Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
+          }
         });
         response = await response.json();
         setListaParcela(response.data);

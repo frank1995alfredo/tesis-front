@@ -5,6 +5,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
 import URL from "../../configuration/URL";
+import valorToken from "../../configuration/valorToken";
 
 const ModalEliminarActividad = ({
   actividadSeleccionada,
@@ -15,9 +16,17 @@ const ModalEliminarActividad = ({
  
 }) => {
 
+  const token = valorToken()
+
+
   const eliminarActividad = async () => {
 
-    await axios.delete(`${URL}/eliminarActividad/` + actividadSeleccionada.id)
+    await axios.delete(`${URL}/eliminarActividad/` + actividadSeleccionada.id, {
+      headers: 
+      {
+        Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
+      }
+    })
       .then((response) => {
         setListaActividad(
           listaActividad.filter((actividad) => actividad.id !== actividadSeleccionada.id)

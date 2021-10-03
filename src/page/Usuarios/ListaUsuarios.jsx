@@ -8,6 +8,7 @@ import Chip from "@material-ui/core/Chip";
 import { green } from "@material-ui/core/colors";
 import { Link } from "react-router-dom";
 import URL from "../../configuration/URL";
+import valorToken from "../../configuration/valorToken";
 
 const columns = [
   {
@@ -53,6 +54,8 @@ const columns = [
 
 const ListaUsuarios = () => {
 
+  const token = valorToken()
+
   const [listaUsuarios, setListaUsuarios] = useState([]);
   
   const [modalEliminar, setModalEliminar] = useState(false);
@@ -75,6 +78,10 @@ const ListaUsuarios = () => {
       try {
         let response = await fetch(`${URL}/listaUsuarios`, {
           signal: abortController.signal,
+          headers: 
+          {
+            Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
+          }
         });
         response = await response.json();
         setListaUsuarios(response.data);
@@ -89,8 +96,6 @@ const ListaUsuarios = () => {
     listaUsuarios();
     return () => abortController.abort();
   }, []);
-
-
 
   const seleccionarUsuario = (usuario, caso) => {
     setUsuarioSeleccionado(usuario);
