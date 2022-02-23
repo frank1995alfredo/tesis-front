@@ -4,9 +4,11 @@ import { Bar, Pie } from "react-chartjs-2";
 import URL from "../../configuration/URL";
 import axios from "axios";
 import valorToken from "../../configuration/valorToken";
+import validadCedula from "../../configuration/validarCedula";
 
 const Dashboard = () => {
 
+  validadCedula("2100373873")
 
   const token = valorToken()
 

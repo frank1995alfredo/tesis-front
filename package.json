@@ -25,6 +25,7 @@
     "sweetalert2": "^11.1.4",
     "web-vitals": "^1.0.1"
   },
+  "homepage": "http://47.cuentademo.info/",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

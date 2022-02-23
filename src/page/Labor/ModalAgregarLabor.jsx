@@ -7,6 +7,7 @@ import URL from "../../configuration/URL";
 import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
 import valorToken from "../../configuration/valorToken";
+import soloLetras from "../../configuration/soloLetras";
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -28,11 +29,15 @@ const ModalAgregarLabor = ({
   const styles = useStyles();
 
   const handleChange = (e) => {
+ 
     const { name, value } = e.target;
-    setLaborSeleccionado((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+    if(soloLetras(e)){
+      setLaborSeleccionado((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    }
+
   };
 
   const agregarLabor = async () => {
@@ -64,6 +69,7 @@ const ModalAgregarLabor = ({
         className={styles.inputMaterial}
         label="Nombre"
         name="nombre"
+        value={laborSeleccionado.nombre}
         onChange={handleChange}
       />
       

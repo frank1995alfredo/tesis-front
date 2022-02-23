@@ -67,7 +67,8 @@ const ListaUsuarios = () => {
     nombre: "",
     apellido: "",
     cedula: "",
-    tipousuario: ""
+    tipousuario: "",
+    email: ""
   });
 
   useEffect(() => {

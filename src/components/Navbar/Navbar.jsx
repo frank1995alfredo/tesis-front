@@ -23,7 +23,6 @@ const Navbar = ({children, nombre}) => {
       toggleButton.current.classList = function () {
         el.classList.toggle("toggled");
     }
-   
   }
 }    
 
@@ -56,7 +55,6 @@ useEffect(() => {
   usuario();
   return () => abortController.abort();
 }, []);
-
 
 
   return (

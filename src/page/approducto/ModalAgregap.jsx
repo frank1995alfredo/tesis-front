@@ -6,8 +6,8 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import URL from "../../configuration/URL";
 import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
-import valorToken from "../../configuration/valorToken";
-import soloLetras from "../../configuration/soloLetras"
+
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -16,69 +16,86 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ModalAgregarAfectacion = ({
+const ModalAgregap = ({
   modalInsertar,
   abrirCerrarModalInsertar,
-  setAfectacionSeleccionado,
-  afectacionSeleccionado,
-  listaAfectacion,
-  setListaAfectacion
+  abrirCerrarModalEditar,
+  setLaborSeleccionado,
+  laborSeleccionado,
+  listaLabor,
+  setListaLabor
 }) => {
-
-  const token = valorToken()
-
   const styles = useStyles();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    setLaborSeleccionado((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
 
-    if(soloLetras(e)){
-      setAfectacionSeleccionado((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-    }
-   
   };
+  
 
-  const agregarAfectacion = async () => {
-    await axios
-      .post(`${URL}/crearAfectacion`, afectacionSeleccionado, {
-        headers: 
-        {
-          Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
+  
+
+  const editarLabor = async() => {
+    await axios.put(`${URL}/editarProducto/`+ laborSeleccionado.id, laborSeleccionado)
+    .then(response => {
+      let laborNuevo = listaLabor;
+      laborNuevo.map(labor => {
+        if(labor.id === laborSeleccionado.id) {
+          labor.nombre = laborSeleccionado.nombre;
         }
-      })
-      .then((response) => {
-        setListaAfectacion(listaAfectacion.concat(response.data.data[0]));
-        Alerta.fire({
-          icon: "success",
-          title: "Registro agregado.",
-        });
-        abrirCerrarModalInsertar();
-      })
-      .catch((error) => {
-        console.log(error);
       });
+      setListaLabor(laborNuevo);
+      Alerta.fire({
+        icon: "success",
+        title: "Registro editado.",
+      });
+      abrirCerrarModalEditar();
+    }).catch(error => {
+      console.log(error);
+    })
   };
+
+  
+
 
   return (
     <Modal open={modalInsertar} close={abrirCerrarModalInsertar}>
-      <h3>Nuevo Afectación</h3>
+      <h3>Producto</h3>
       <TextField
         className={styles.inputMaterial}
-        label="Nombre"
-        name="nombre_afectacion"
-        value={afectacionSeleccionado.nombre_afectacion}
+        label="Codigo"
+        name="id"
         onChange={handleChange}
+        value={laborSeleccionado.id}
+      />
+      
+      <br />
+      <TextField
+        className={styles.inputMaterial}
+        label="Producto"
+        name="nombre"
+        onChange={handleChange}
+        value={laborSeleccionado.nombre}
       />
       <br />
       <TextField
         className={styles.inputMaterial}
-        label="Descripción"
-        name="descripcion"
-        value={afectacionSeleccionado.descripcion}
+        label="Cantidad"
+        name="cantidad"
         onChange={handleChange}
+        
+      />
+      <br />
+      <TextField
+        className={styles.inputMaterial}
+        label="Precio"
+        name="precio"
+        onChange={handleChange}
+        value={laborSeleccionado.precio}
       />
       <br />
       <br />
@@ -87,7 +104,7 @@ const ModalAgregarAfectacion = ({
           variant="contained"
           color="primary"
           size="small"
-          onClick={() => agregarAfectacion()}
+          
         >
           {" "}
           <AddCircleIcon />
@@ -107,4 +124,4 @@ const ModalAgregarAfectacion = ({
   );
 };
 
-export default ModalAgregarAfectacion;
+export default ModalAgregap;

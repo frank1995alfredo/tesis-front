@@ -20,7 +20,6 @@ import Alerta from "../../components/Alerts/Alerta";
 import PropTypes from "prop-types";
 import URL from "../../configuration/URL";
 import { useHistory } from "react-router-dom";
-import valorToken from "../../configuration/valorToken";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -35,9 +34,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const FormAgregarAfectacionParcela = () => {
-
-  const token = valorToken()
-
   const initialFormState = {
     id: null,
     idafectacion: 0,
@@ -84,10 +80,6 @@ const FormAgregarAfectacionParcela = () => {
       try {
         let response = await fetch(`${URL}/listaParcela`, {
           signal: abortController.signal,
-          headers: 
-          {
-            Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
-          }
         });
         response = await response.json();
         setListaParcela(response.data);
@@ -104,10 +96,6 @@ const FormAgregarAfectacionParcela = () => {
       try {
         let response = await fetch(`${URL}/listaAfectacion`, {
           signal: abortController.signal,
-          headers: 
-          {
-            Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
-          }
         });
         response = await response.json();
         setListaAfectacion(response.data);
@@ -129,12 +117,7 @@ const FormAgregarAfectacionParcela = () => {
 
   const peticionAgregar = async () => {
     await axios
-      .post(`${URL}/crearAfectacionParcela`, agregarAfectacionParcela, {
-        headers: 
-        {
-          Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
-        }
-      })
+      .post(`${URL}/crearAfectacionParcela`, agregarAfectacionParcela)
       .then((response) => {
         setAgregarAfectacionParcela(initialFormState);
         Alerta.fire({
@@ -229,7 +212,7 @@ const FormAgregarAfectacionParcela = () => {
             <div className="col-auto">
               {" "}
               <Link
-                to="/actividades/AfectacionParcela"
+                to="/actividades/afectacionParcela"
                 type="button"
                 className="btn btn-secondary btn-sm"
               >

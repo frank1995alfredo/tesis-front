@@ -22,6 +22,7 @@ import PropTypes from "prop-types";
 import URL from "../../configuration/URL";
 import { useHistory } from "react-router-dom";
 import valorToken from "../../configuration/valorToken";
+import soloNumeros from "../../configuration/soloNumeros";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -63,7 +64,12 @@ const FormEditarActividad = () => {
 
   const buscarActividad = async () => {
     try {
-      await axios.get(`${URL}/buscarActividad/${id}`, {}).then((response) => {
+      await axios.get(`${URL}/buscarActividad/${id}`, {
+        headers: 
+        {
+          Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
+        }
+      }).then((response) => {
         setEditarActividad({
           idtipolabor: response.data.data[0].idtipolabor,
           idparcela_1: response.data.data[0].idparcela,
@@ -192,8 +198,17 @@ const FormEditarActividad = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEditarActividad({ ...editarActividad, [name]: value });
-    console.log(editarActividad);
+  
   };
+  const validacionNumero = (e) => {
+    
+    const { name, value } = e.target;
+
+    if(soloNumeros(e)) {
+      setEditarActividad({ ...editarActividad, [name]: value });
+    }
+    
+  }
 
   var hoy = new Date();
   var fecha =
@@ -314,7 +329,7 @@ const FormEditarActividad = () => {
                         <Select
                           labelId="demo-simple-select-label"
                           id="demo-simple-select"
-                          name="idparcela"
+                          name="idparcela_1"
                           value={editarActividad.idparcela_1}
                           onChange={handleInputChange}
                         >
@@ -366,7 +381,7 @@ const FormEditarActividad = () => {
                         name="avance"
                         label="Avance"
                         value={editarActividad.avance}
-                        onChange={handleInputChange}
+                        onChange={validacionNumero}
                         fullWidth
                       />
                     </Grid>
@@ -377,7 +392,7 @@ const FormEditarActividad = () => {
                         name="total_actividad"
                         label="Total Actividad"
                         value={editarActividad.total_actividad}
-                        onChange={handleInputChange}
+                        onChange={validacionNumero}
                         fullWidth
                       />
                     </Grid>
@@ -403,9 +418,9 @@ const FormEditarActividad = () => {
                     </Grid>
                     <Grid item xs={12} lg={2} sm={3}>
                       <TextField
-                        label="Cantidad"
+                        label="Cantidad de recurso"
                         pattern="[0-9]{0,13}"
-                        onChange={handleInputChange}
+                        onChange={validacionNumero}
                         value={editarActividad.cantidad}
                         name="cantidad"
                         id="formatted-numberformat-input"
@@ -413,9 +428,9 @@ const FormEditarActividad = () => {
                     </Grid>
                     <Grid item xs={12} lg={2} sm={3}>
                       <TextField
-                        label="Costo"
+                        label="Costo del recurso"
                         pattern="[0-9]{0,13}"
-                        onChange={handleInputChange}
+                        onChange={validacionNumero}
                         value={editarActividad.costo}
                         name="costo"
                         id="formatted-numberformat-input"

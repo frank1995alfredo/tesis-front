@@ -6,8 +6,6 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import URL from "../../configuration/URL";
 import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
-import valorToken from "../../configuration/valorToken";
-import soloLetras from "../../configuration/soloLetras";
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -15,45 +13,29 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ModalAgregarRecursos = ({
+const ModalAgregarAfectacionParcela = ({
   modalInsertar,
   abrirCerrarModalInsertar,
-  setRecursosSeleccionado,
-  recursosSeleccionado,
-  listaRecurso,
-  setListaRecurso
+  setAfectacionParcelaSeleccionado,
+  afectacionparcelaSeleccionado,
+  listaAfectacionParcela,
+  setListaAfectacionParcela
 }) => {
-
-  
-  const token = valorToken()
-
   const styles = useStyles();
 
-
-
-  const validacionLetra = (e) => {
-    
+  const handleChange = (e) => {
     const { name, value } = e.target;
+    setAfectacionParcelaSeleccionado((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
 
-    if(soloLetras(e)) {
-      setRecursosSeleccionado((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-    }
-    
-  }
-
-  const agregarRecurso = async () => {
+  const agregarAfectacionParcela = async () => {
     await axios
-      .post(`${URL}/crearRecurso`, recursosSeleccionado, {
-        headers: 
-        {
-          Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
-        }
-      })
+      .post(`${URL}/crearAfectacionParcela`, afectacionparcelaSeleccionado)
       .then((response) => {
-        setListaRecurso(listaRecurso.concat(response.data.data[0]));
+        setListaAfectacionParcela(listaAfectacionParcela.concat(response.data.data[0]));
         Alerta.fire({
           icon: "success",
           title: "Registro agregado.",
@@ -68,24 +50,36 @@ const ModalAgregarRecursos = ({
 
   return (
     <Modal open={modalInsertar} close={abrirCerrarModalInsertar}>
-      <h3>Nuevo Recursos</h3>
+      <h3>Nueva afectacionparcela</h3>
       <TextField
         className={styles.inputMaterial}
-        label="Nombre"
-        name="nombre"
-        value={recursosSeleccionado.nombre}
-        onChange={validacionLetra}
+        label="parcela"
+        name="numero"
+        onChange={handleChange}
       />
       
       <br />
+      <TextField
+        className={styles.inputMaterial}
+        label="afectacion"
+        name="nombre_afectacion"
+        onChange={handleChange}
+      />
       
       <br />
       <TextField
         className={styles.inputMaterial}
-        label="Descripcion"
-        name="caracteristica"
-        value={recursosSeleccionado.caracteristica}
-        onChange={validacionLetra}
+        label="fecha"
+        name="fecha"
+        onChange={handleChange}
+      />
+      
+      <br />
+      <TextField
+        className={styles.inputMaterial}
+        label="Observacion"
+        name="observacion"
+        onChange={handleChange}
       />
       
       <br />
@@ -95,7 +89,7 @@ const ModalAgregarRecursos = ({
           variant="contained"
           color="primary"
           size="small"
-          onClick={() => agregarRecurso()}
+          onClick={() => agregarAfectacionParcela()}
         >
           {" "}
           <AddCircleIcon />
@@ -115,4 +109,4 @@ const ModalAgregarRecursos = ({
   );
 };
 
-export default ModalAgregarRecursos;
+export default ModalAgregarAfectacionParcela;

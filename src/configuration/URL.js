@@ -1,3 +1,3 @@
-const URL = 'http://127.0.0.1:8000/api';
+const URL = 'http://apiarroz13.000webhostapp.com/api';
 
 export default URL;

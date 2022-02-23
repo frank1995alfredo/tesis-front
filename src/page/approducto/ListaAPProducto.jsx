@@ -27,25 +27,37 @@ const columns = [
     field: "nombre_afectacion",
   },
   {
-    title: "Nombre",
-    field: "nombre",
+    title: "Observacion",
+    field: "observacion",
   },
   {
-    title: "Cantidad",
-    field: "cantidad",
+    title: "Fecha",
+    field: "fecha",
   },
   {
-    title: "Costo",
-    field: "costo",
+    title: "Estado",
+    render: (rowData) =>
+      rowData.estado === 1 ? (
+        <Chip
+          variant="outlined"
+          style={{ backgroundColor: green[500] }}
+          label="Activo"
+          size="small"
+        />
+      ) : (
+        <Chip
+          variant="outlined"
+          style={{ backgroundColor: red[500] }}
+          label="Inactivo"
+          size="small"
+        />
+      ),
   },
 ];
 
-
-
 const ListaAPProducto = () => {
+  const token = valorToken();
 
-  const token = valorToken()
-  
   const [listaAPProducto, setListaAPProducto] = useState([]);
 
   const [modalEliminar, setModalEliminar] = useState(false);
@@ -65,10 +77,9 @@ const ListaAPProducto = () => {
 
     if (caso === "Eliminar") {
       abrirCerrarModalEliminar();
-    } else{
+    } else {
       abrirCerrarModalEditar();
     }
-    
   };
   //metodo para editar
   const history = useHistory();
@@ -98,10 +109,9 @@ const ListaAPProducto = () => {
       try {
         let response = await fetch(`${URL}/listaAfectacionParcelaProducto`, {
           signal: abortController.signal,
-          headers: 
-          {
-            Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
-          }
+          headers: {
+            Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
+          },
         });
         response = await response.json();
         setListaAPProducto(response.data);
@@ -119,18 +129,18 @@ const ListaAPProducto = () => {
 
   return (
     <>
-      <Navbar nombre="Acciones Tomadas">
+      <Navbar nombre="Correcciones Tomadas">
         <div className="container-fluid px-4">
           <div className="row">
+            <div className="col-auto"></div>
+            <div className="col-auto"></div>
             <div className="col-auto">
-            
-            </div>
-            <div className="col-auto">
-            
-            </div>
-            <div className="col-auto">
-            {" "}
-              <Link to="/actividades/AfectacionParcela" type="button" className="btn btn-secondary btn-sm">
+              {" "}
+              <Link
+                to="/AfectacionParcela"
+                type="button"
+                className="btn btn-secondary btn-sm"
+              >
                 <i class="fas fa-arrow-left"></i> Regresar
               </Link>
             </div>
@@ -140,13 +150,12 @@ const ListaAPProducto = () => {
               <MaterialTable
                 columns={columns}
                 data={listaAPProducto}
-                title="Lista de acciones tomadas"
+                title="Lista de las acciones tomadas"
                 actions={[
                   {
                     icon: "edit",
                     tooltip: "Editar AfectacionParcela",
-                    onClick: (event, rowData) =>
-                      handleUpdateClick(rowData.id),
+                    onClick: (event, rowData) => handleUpdateClick(rowData.id),
                   },
                   {
                     icon: "delete",
@@ -154,7 +163,6 @@ const ListaAPProducto = () => {
                     onClick: (event, rowData) =>
                       seleccionarAPProducto(rowData, "Eliminar"),
                   },
-                  
                 ]}
                 options={{
                   actionsColumnIndex: -1,
@@ -164,16 +172,16 @@ const ListaAPProducto = () => {
                     actions: "Acciones",
                   },
                   toolbar: {
-                    searchTooltip: 'Buscar',
-                    searchPlaceholder: 'Buscar'
+                    searchTooltip: "Buscar",
+                    searchPlaceholder: "Buscar",
                   },
                   pagination: {
-                    labelRowsSelect: 'Registros',
-                    firstTooltip: 'Primera página',
-                    previousTooltip: 'Página anterior',
-                    nextTooltip: 'Siguiente página',
-                    lastTooltip: 'Última página',
-                  }
+                    labelRowsSelect: "Registros",
+                    firstTooltip: "Primera página",
+                    previousTooltip: "Página anterior",
+                    nextTooltip: "Siguiente página",
+                    lastTooltip: "Última página",
+                  },
                 }}
               />
             </div>
@@ -187,7 +195,6 @@ const ListaAPProducto = () => {
         abrirCerrarModalEliminar={abrirCerrarModalEliminar}
         modalEliminar={modalEliminar}
       />
-   
     </>
   );
 };

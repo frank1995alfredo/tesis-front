@@ -11,6 +11,9 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import valorToken from "../../configuration/valorToken";
+import soloLetras from "../../configuration/soloLetras";
+
+
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -38,6 +41,20 @@ const ModalAgregarUsuario = ({
       [name]: value,
     }));
   };
+
+  const validacionLetra = (e) => {
+    
+    const { name, value } = e.target;
+
+    if(soloLetras(e)) {
+      setUsuarioSeleccionado((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    }
+    
+  }
+
 
   const agregarUsuario = async () => {
     await axios
@@ -93,20 +110,29 @@ const ModalAgregarUsuario = ({
         className={styles.inputMaterial}
         label="Nombre"
         name="nombre"
-        onChange={handleChange}
+        value={usuarioSeleccionado.nombre}
+        onChange={validacionLetra}
       />
       <br />
       <TextField
         className={styles.inputMaterial}
         label="Apellido"
         name="apellido"
-        onChange={handleChange}
+        value={usuarioSeleccionado.apellido}
+        onChange={validacionLetra}
       />
       <br />
       <TextField
         className={styles.inputMaterial}
         label="Cédula"
         name="cedula"
+        onChange={handleChange}
+      />
+       <br />
+      <TextField
+        className={styles.inputMaterial}
+        label="Email"
+        name="email"
         onChange={handleChange}
       />
       <br />

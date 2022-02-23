@@ -7,6 +7,9 @@ import URL from "../../configuration/URL";
 import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
 import valorToken from "../../configuration/valorToken";
+import soloNumeros from "../../configuration/soloNumeros";
+import soloLetras from "../../configuration/soloLetras";
+
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -26,13 +29,20 @@ const ModalEditarRecursos = ({
 
   const token = valorToken()
   
-  const handleChange = (e) => {
+ 
+  const validacionLetra = (e) => {
+    
     const { name, value } = e.target;
-    setRecursosSeleccionado((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
+
+    if(soloLetras(e)) {
+      setRecursosSeleccionado((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    }
+    
+  }
+
   const styles = useStyles();
  
   
@@ -71,14 +81,14 @@ const ModalEditarRecursos = ({
         label="Nombre"
         name="nombre"
         value={recursosSeleccionado.nombre}
-        onChange={handleChange}
+        onChange={validacionLetra}
       />
       <TextField
         className={styles.inputMaterial}
         label="Descripcion"
         name="caracteristica"
         value={recursosSeleccionado.caracteristica}
-        onChange={handleChange}
+        onChange={validacionLetra}
       />
       <br />
       <br />

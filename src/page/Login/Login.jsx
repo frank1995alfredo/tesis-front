@@ -66,11 +66,15 @@ const Login = () => {
 
   const login = async () => {
     auth.login() 
-
-
-    await axios.post(`${URL}/login`, dataLogin)
+    console.log(dataLogin)
+    await axios.post(`${URL}/login`, dataLogin, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    },
+    })
       .then((response) => {
-
+      
         setToken(response.data.token)
         setTipoUser(response.data.tipouser)
         
@@ -89,6 +93,31 @@ const Login = () => {
         console.log(error)
       });
   };
+
+  const login2 = async() => {
+    auth.login() 
+    try {
+      let config = {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'applciation/json',
+        },
+        body: JSON.stringify(dataLogin)
+      }
+      console.log(dataLogin)
+      
+      let res = await fetch(`${URL}/login`, config)
+      let json = await res.json()
+      console.log(json)
+    }catch(error) {
+      Alerta.fire({
+        icon: "error",
+        title: "Datos incorrectos.",
+      });
+      console.log(error)
+    }
+  }
   
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -153,7 +182,7 @@ const Login = () => {
                   </FormControl>
                   </div>
                  
-                  <button type="submit" class="btn btn-success btn-sm" onClick={() => login()}>
+                  <button type="submit" class="btn btn-success btn-sm" onClick={() => login2()}>
                     Ingresar
                   </button>
                 </div>

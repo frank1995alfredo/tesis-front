@@ -22,6 +22,7 @@ import PropTypes from "prop-types";
 import URL from "../../configuration/URL";
 import { useHistory } from "react-router-dom";
 import { Checkbox } from "@material-ui/core";
+import valorToken from "../../configuration/valorToken";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -44,6 +45,18 @@ const FormeditarAfectacionParcela = () => {
     observacion: "",
     estado: 0,
   };
+  const selecciona = [
+    {
+      value:-1,label:'Selecciona una opcion'
+    },
+    {
+      value:0,label:'Inactivo'
+    },{
+      value:1,label:'Activo'
+    }
+  ]
+
+   const token = valorToken();
 
   let { id } = useParams();
   const [editarAfectacionParcela, setEditarAfectacionParcela] = useState(initialFormState);
@@ -53,42 +66,27 @@ const FormeditarAfectacionParcela = () => {
   const [recurso, setRecurso] = useState([]);
 
   const countRef = useRef(0);
-
+const va = 0;
   async function buscarAfectacionParcela() {
     try {
-      let response = await fetch(`${URL}/buscarAfectacionParcela`);
+      let response = await fetch(`${URL}/buscarAfectacionParcela/${id}`);
       response = await response.json();
-      setProducto(response.data);
-
-      for (let i = 0; i < response.data.length; i++) {
-        if (response.data[i].id == id) {
-          let dall = {
-            id: id,
-            idafectacion: response.data[i].idafectacion,
-            idparcela: response.data[i].idparcela,
-            fecha: response.data[i].fecha,
-            observacion: response.data[i].observacion,
-            estado: response.data[i].estado,
-          };
-          setEditarAfectacionParcela(dall);
-          
-          
-        }
-      }
+     
+          setEditarAfectacionParcela(response.data[0]);
+          console.log(response.data)    
+      
     } catch (error) {
       console.log(error);
     }
   };
   const peticionEditar = async () => {
-    console.log(editarAfectacionParcela.id)
-    console.log(editarAfectacionParcela.idafectacion)
-    console.log(editarAfectacionParcela.idparcela)
-    console.log(editarAfectacionParcela.fecha)
-    console.log(editarAfectacionParcela.observacion)
-    console.log(editarAfectacionParcela.estado)
     try {
       await axios
-        .put(`${URL}/editarAfectacionParcela/${id}`, editarAfectacionParcela, {})
+        .put(`${URL}/editarAfectacionParcela/${id}`, editarAfectacionParcela, {
+            headers: {
+                  Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
+              },
+        })
         .then((response) => {
             setEditarAfectacionParcela(initialFormState);
           Alerta.fire({
@@ -107,7 +105,11 @@ const FormeditarAfectacionParcela = () => {
   //funcion para listar los labores
   async function Afectacion() {
     try {
-      let response = await fetch(`${URL}/listaAfectacion`);
+      let response = await fetch(`${URL}/listaAfectacion`, {
+         headers: {
+                  Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
+              },
+      });
       response = await response.json();
       setAfectacion(response.data);
     } catch (error) {
@@ -118,7 +120,11 @@ const FormeditarAfectacionParcela = () => {
   //funcion para listar las parcelas
   async function Parcela() {
     try {
-      let response = await fetch(`${URL}/listaParcela`);
+      let response = await fetch(`${URL}/listaParcela`, {
+         headers: {
+                  Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
+              },
+      });
       response = await response.json();
       setParcela(response.data);
     } catch (error) {
@@ -130,7 +136,6 @@ const FormeditarAfectacionParcela = () => {
 
   useEffect(() => {
     buscarAfectacionParcela();
-    peticionEditar();
     Afectacion();
     Parcela();
   }, [countRef]);
@@ -317,23 +322,7 @@ const FormeditarAfectacionParcela = () => {
                         />
                       </form>
                     </Grid>
-                    <Grid item xs={12} lg={2} sm={3}>
-                      <FormControl className={classesSelect.formControl}>
-                        <InputLabel id="demo-simple-checkbox">
-                          Afectacion
-                        </InputLabel>
-                        <br />
-                        <br />
-                        <br />
-                        <input
-                          type="checkbox"
-                          name="estado"
-                          checked={editarAfectacionParcela.estado}
-                          
-                          onChange={handleInputChange}
-                        />
-                      </FormControl>
-                    </Grid>
+                    
 
                     <Grid item xs={12} sm={12}>
                       <Button

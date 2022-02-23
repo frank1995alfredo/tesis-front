@@ -80,7 +80,6 @@ const ModalEditarUsuario = ({
   const styles = useStyles();
 
 
-
   return (
     <Modal open={modalEditar} close={abrirCerrarModalEditar}>
       <h3>Editar Usuario</h3>

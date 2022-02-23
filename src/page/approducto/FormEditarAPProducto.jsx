@@ -7,7 +7,7 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import CancelIcon from "@material-ui/icons/Cancel";
 import FormControl from "@material-ui/core/FormControl";
-
+import MaterialTable from "material-table";
 import NumberFormat from "react-number-format";
 import { useParams } from "react-router-dom";
 
@@ -21,7 +21,10 @@ import Alerta from "../../components/Alerts/Alerta";
 import PropTypes from "prop-types";
 import URL from "../../configuration/URL";
 import { useHistory } from "react-router-dom";
-import { Checkbox } from "@material-ui/core";
+import { Checkbox, DialogActions } from "@material-ui/core";
+import React from "react";
+import SelectInput from "@material-ui/core/Select/SelectInput";
+import valorToken from "../../configuration/valorToken";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -34,14 +37,42 @@ const useStyles = makeStyles((theme) => ({
     width: 200,
   },
 }));
+const columns = [
+  {
+    title: "#",
+    render: (rowData) => rowData.tableData.id + 1,
+  },
+  {
+    title: "Codigo",
+    field: "idproducto",
+  },
+  {
+    title: "Producto",
+    field: "nombre",
+  },
+  {
+    title: "Cantidad",
+    field: "cantidad",
+  },
+  {
+    title: "Precio",
+    field: "costo",
+  },
+  {
+    title: "Total",
+    field: "total_parcial",
+  },
+];
 
 const FormEditarAPProducto = ({
-   
-    ValorSeleccionado,
-    setValorSeleccionado,
-    
-  
-  }) => {
+  modalInsertar,
+  abrirCerrarModalInsertar,
+  abrirCerrarModalEditar,
+  setLaborSeleccionado,
+  laborSeleccionado,
+  listaLabor,
+  setListaLabor,
+}) => {
   const initialFormState = {
     id: null,
     idproducto: 0,
@@ -49,90 +80,204 @@ const FormEditarAPProducto = ({
     cantidad: 0,
     costo: 0.0,
     total_parcial: 0.0,
+    existencia: 0,
   };
+
+ const token = valorToken();
   
   let { id } = useParams();
-  const [editarAPProducto, setEditarAPProducto] = useState(initialFormState);
-  
+  const [valor, setValor] = useState({
+    xcantidad: "",
+    xtotal: "",
+  });
+  const [espe, setEspe] = useState([]);
+  const [agregarAPProducto, setAgregarAPProducto] = useState(initialFormState);
+  const [listaAfectacionParcela, setListaAfectacionParcela] = useState([]);
+  const [buscarProducto, setBuscarProducto] = useState([]);
   const [producto, setProducto] = useState([]);
-  const [parcela, setParcela] = useState([]);
+  const [cruz, setCruz] = useState([]);
+  const [crc, setCrc] = useState([]);
   const [recurso, setRecurso] = useState([]);
-
+  const [temporal, setTemporal] = useState({});
   const countRef = useRef(0);
-  
+  const [productoSeleccionado, setProductoSeleccionado] = useState({
+    idproducto: 0,
+    Producto: "",
+    cantidad: 0,
+    precio: 0.0,
+    total_parcial: 0.0,
+  });
+  const [afectacionparcelaSeleccionado, setAfectacionParcelaSeleccionado] =
+    useState({
+      id: 0,
+      numero: 0,
+      nombre_afectacion: "",
+      fecha: Date,
+      observacion: "",
+      estado: 0,
+    });
+  async function devolver_producto() {
+    for (var i = 0; i < crc.length; i++) {
+      const arreglos = producto.filter((Ser) => Ser.id === crc[i].idproducto);
+      let resul = arreglos[0].cantidad + crc[i].cantidad;
+      console.log(resul);
+      const call = {
+        id: buscarProducto.id,
+        cantidad: resul,
+      };
 
-  
-    async function buscarAPProducto() {
-        try {
-            let response = await fetch(`${URL}/buscarAfectacionParcelaProducto`);
-            response = await response.json();
-            setProducto(response.data);
-
-            for(let i = 0; i < response.data.length; i++) {
-                
-                if(response.data[i].id==id){
-                    let dall = { 
-                        id: response.data[i].id,
-                        idproducto: response.data[i].idproducto,
-                        idafectacionparcela:response.data[i].idafectacionparcela,
-                        cantidad: response.data[i].cantidad,
-                        costo: response.data[i].costo,
-                        total_parcial: response.data[i].total_parcial,
-                    }
-                    setEditarAPProducto(dall);
-                    
-                }
-               
-            }
- 
-          } catch (error) {
-            console.log(error);
-          }
-      }
-  
-  
-
-  const peticionEditar = async () => {
-    try {
       await axios
-        .put(`${URL}/editarAfectacionParcelaProducto/${id}`, editarAPProducto, {})
-        .then((response) => {
-            setEditarAPProducto(initialFormState);
-          Alerta.fire({
-            icon: "success",
-            title: "Registro editado.",
-          });
-         
+        .put(`${URL}/editarProductox/` + crc[i].idproducto, call, {
+           headers: {
+                  Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
+              },
+        })
+        .then((response) => {})
+        .catch((error) => {
+          console.log(error);
         });
+
+    
+
+    }
+  }
+  const eliminarAPProducto = async () => {
+    for (var i = 0; i < crc.length; i++) {
+    await axios.delete(`${URL}/eliminarAfectacionParcelaProducto/` + crc[i].idafectacionparcela, {
+       headers: {
+                  Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
+              },
+    })
+      .then((response) => {
+        
+      
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    }
+  };
+
+  async function peticionAgregar() {
+    if (listaAfectacionParcela.length > 0) {
+      devolver_producto();
+      eliminarAPProducto();
+      for (let index = 0; index < listaAfectacionParcela.length; index++) {
+        let parcela = producto.filter(
+          (pro) => pro.id == listaAfectacionParcela[index].idproducto
+        );
+        let resul =
+          parcela[0].cantidad - listaAfectacionParcela[index].cantidad;
+        const call = {
+          id: buscarProducto.id,
+          cantidad: resul,
+        };
+        setRecurso(call);
+        await axios
+          .put(
+            `${URL}/editarProductox/` + listaAfectacionParcela[index].idproducto,
+            call, {
+               headers: {
+                  Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
+              },
+            }
+          )
+          .then((response) => {})
+          .catch((error) => {
+            console.log(error);
+          });
+        let data = {
+          idproducto: listaAfectacionParcela[index].idproducto,
+          idafectacionparcela: id,
+          cantidad: listaAfectacionParcela[index].cantidad,
+          costo: listaAfectacionParcela[index].costo,
+          total_parcial: listaAfectacionParcela[index].total_parcial,
+        };
+        await axios
+          .post(`${URL}/crearAfectacionParcelaProducto`, data, {
+             headers: {
+                  Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
+              },
+          })
+          .then((response) => {
+            setAgregarAPProducto(initialFormState);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        setRecurso(call);
+      }
+      Alerta.fire({
+        icon: "success",
+        title: "Registro agregado.",
+      });
+      PeticionRegresa();
+    } else {
+      Alerta.fire({
+        icon: "info",
+        title: "Agregar productos a la lista.",
+      });
+    }
+  }
+
+  const PeticionRegresa = () => {
+    history.push(`/AfectacionParcela`);
+  };
+
+ 
+  useEffect(() => {
+    const abortController = new AbortController();
+
+    //LISTAR AfectacionParcelaproducto
+
+    const listaAPProductos = async () => {
+      try {
+        let response = await fetch(
+          `${URL}/buscarAfectacionParcelaProductox/${id}`, {
+               headers: 
+        {
+          Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
+        }
+          }
+        );
+        response = await response.json();
+        console.log(response.data)
+        setCrc(response.data);
+        setListaAfectacionParcela(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    listaAPProductos();
+
+    return () => abortController.abort();
+  }, []);
+
+  //////////////////////////////////////////////////////////////
+  //Codigo funciona
+  //funcion para listar los productos
+  async function Producto() {
+    try {
+      let response = await fetch(`${URL}/listaProducto`, {
+         headers: {
+                  Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
+              },
+      });
+      response = await response.json();
+      setProducto(response.data);
     } catch (error) {
       console.log(error);
     }
-  };
-  //////////////////////////////////////////////////////////////
-  //Codigo funciona  
-  //funcion para listar los labores
-  async function Producto() {
-    try {
-      let response = await fetch(`${URL}/listaProducto`);
-      response = await response.json();
-      setProducto(response.data);
-      
-      
-    } catch (error) {
-      
-    }
   }
-///////////////////////////////////////////////////////////
+
+  //funcion para listar las parcelas
+
+  ///////////////////////////////////////////////////////////
   //funcion para listar los recursos
-  
 
   useEffect(() => {
-    buscarAPProducto();
     Producto();
-    
-    
-    
-   
   }, [countRef]);
 
   const select = makeStyles((theme) => ({
@@ -149,14 +294,128 @@ const FormEditarAPProducto = ({
   const cancelar = () => {
     history.push(``);
   };
-const bussArry = () =>{
-    
-      
-}
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setEditarAPProducto({ ...editarAPProducto, [name]: value });
-    console.log(editarAPProducto);
+    setAgregarAPProducto({ ...agregarAPProducto, [name]: value });
+  };
+
+  /// toma el valor de ingreso del campo cantidad
+
+  const handleInputChangex = (e) => {
+    setValor({
+      ...valor,
+      [e.target.name]: e.target.value,
+    });
+  };
+  const zero = function () {
+    let dall = {
+      id: "",
+      nombre: "",
+      fecha_compra: "",
+      fecha_caducidad: "",
+      costo: 0,
+      cantidad: 0,
+      descripcion: "",
+      estado: 0,
+    };
+    setBuscarProducto(dall);
+    let doc = {
+      xcantidad: 0,
+      xtotal: 0,
+    };
+    setValor(doc);
+    console.log(valor);
+  };
+
+  /// Muestra datos de un producto seleccionado del combobox
+  const SelectChangex = function (e) {
+    if (e.target.value === -1) {
+      zero();
+    } else {
+      const opcion = e.target.value;
+
+      buscarProductos(opcion);
+    }
+  };
+  /// Elimina un iten de la tabla de productos
+
+  const HandleRemoveProducto = (produc) => {
+    setProductoSeleccionado(produc);
+    const arreglos = listaAfectacionParcela.filter(
+      (Ser) => Ser.idproducto !== productoSeleccionado.idproducto
+    );
+    setListaAfectacionParcela(arreglos);
+  };
+  /// Agrega un item a la tabla de productos a utilizar
+
+  const HandleAddInsert = function () {
+    const arreglo = {
+      idproducto: buscarProducto.id,
+      nombre: buscarProducto.nombre,
+      cantidad: valor.xcantidad,
+      costo: buscarProducto.precio,
+      total_parcial: valor.xcantidad * buscarProducto.precio,
+    };
+    if (
+      (buscarProducto.cantidad >= arreglo.cantidad) &
+      (arreglo.cantidad > 0)
+    ) {
+      if (listaAfectacionParcela.length === 0) {
+        setListaAfectacionParcela([...listaAfectacionParcela, arreglo]);
+      } else {
+      }
+
+      let M = 0;
+      listaAfectacionParcela.map((item) => {
+        if (item.idproducto === arreglo.idproducto) {
+          M = 1;
+        } else {
+        }
+      });
+
+      if (M === 0) {
+        setListaAfectacionParcela([...listaAfectacionParcela, arreglo]);
+      } else {
+        Alerta.fire({
+          icon: "info",
+          title: "Producto ya agregado.",
+        });
+      }
+    } else {
+      Alerta.fire({
+        icon: "info",
+        title: "no hay suficiente producto en existencia.",
+      });
+    }
+  };
+
+  function agrega() {}
+
+  /// obtiene un resultado de un producto de la base de datos
+  async function buscarProductos(codigo) {
+    try {
+      let response = await fetch(`${URL}/buscarProducto/${codigo}`, {
+         headers: {
+                  Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
+              },
+      });
+      response = await response.json();
+      console.log(response.data[0])
+      setBuscarProducto(response.data[0]);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handleUpdateClick = (id) => {
+    history.push(`/actividades/actividades/${id}/editarAfectacionparcela`);
+  };
+  const handleInsertClick = (id) => {
+    history.push(`/actividades/actividades/${id}/agregarAPProducto`);
+  };
+  const seleccionarAfectacionParcela = (afectacionparcela, caso) => {
+    setAfectacionParcelaSeleccionado(afectacionparcela);
   };
 
   var hoy = new Date();
@@ -231,7 +490,10 @@ const bussArry = () =>{
   const classesSelect = select();
   return (
     <>
-      <Navbar nombre="Editar ">
+      <Navbar
+        nombre="Editar lista de productos seleccionados
+      "
+      >
         <div className="container-fluid px-4">
           <div className="row">
             <div className="col-auto">
@@ -250,18 +512,20 @@ const bussArry = () =>{
               <div className="card">
                 <div className="card-body">
                   <Grid container spacing={3}>
-                  <Grid item xs={12} lg={2} sm={3}>
-                    <FormControl className={classesSelect.formControl}>
-                        <InputLabel id="demo-simple-select-label">
-                          Parcela Afectada
-                        </InputLabel>
+                    <Grid item xs={12} lg={2} sm={3}>
+                      <php>
+                        <h5>Producto</h5>
+                      </php>
+                      <FormControl className={classesSelect.formControl}>
+                        <InputLabel id="demo-simple-select-label"></InputLabel>
                         <Select
                           labelId="demo-simple-select-label"
-                          id="demo-simple-select"
+                          id="producto"
                           name="idproducto"
-                          value = {editarAPProducto.idproducto}
-                          onChange={handleInputChange}
+                          onClick={SelectChangex}
+                          defaultValue={-1}
                         >
+                          <option value={-1}>Seleccione un item</option>
                           {producto.map((parce, index) => (
                             <MenuItem value={parce.id} key={index}>
                               {parce.nombre}
@@ -271,56 +535,117 @@ const bussArry = () =>{
                       </FormControl>
                     </Grid>
                     <Grid item xs={12} lg={2} sm={3}>
-                    <form className={classes.container} noValidate>
-                      <TextField
-                        required
-                        id="Cantidad"
-                        name="cantidad"
-                        label="Cantidad"
-                        value={editarAPProducto.cantidad}
-                        
-                        
-                        onChange={handleInputChange}
-                        fullWidth
-                      />
-                      </form>
-                    </Grid>
-                    <Grid item xs={5} lg={2} sm={3}>
-                    <form className={classes.container} noValidate>
-                      <TextField
-                        required
-                        id="Costo"
-                        name="costo"
-                        label="costo"
-                        value={editarAPProducto.costo}
-                        onChange={handleInputChange}
-                        fullWidth
-                      />
+                      <php>
+                        <h5>Existencia</h5>
+                      </php>
+                      <form className={classes.container} noValidate>
+                        <TextField
+                          required
+                          id="existencia"
+                          name="existencia"
+                          disabled={true}
+                          onChange={handleInputChange}
+                          value={buscarProducto.cantidad}
+                          fullWidth
+                        />
                       </form>
                     </Grid>
                     <Grid item xs={12} lg={2} sm={3}>
-                    <form className={classes.container} noValidate>
-                      <TextField
-                        required
-                        id="Total_Parcial"
-                        name="total_parcial"
-                        label="Total Parcial"
-                        value={editarAPProducto.total_parcial}
-                        onChange={handleInputChange}
-                        fullWidth
-                      />
+                      <php>
+                        <h5>Cantidad</h5>
+                      </php>
+                      <form className={classes.container} noValidate>
+                        <TextField
+                          required
+                          id="Cantidad"
+                          name="xcantidad"
+                          onChange={handleInputChangex}
+                          fullWidth
+                        />
                       </form>
                     </Grid>
-                    
+                    <Grid item xs={5} lg={2} sm={3}>
+                      <php>
+                        <h5>Costo Unitario</h5>
+                      </php>
+                      <form className={classes.container} noValidate>
+                        <TextField
+                          required
+                          id="Costo"
+                          name="Costo"
+                          disabled={true}
+                          onChange={handleInputChange}
+                          value={buscarProducto.precio}
+                          fullWidth
+                        />
+                      </form>
+                    </Grid>
+                    <Grid item xs={12} lg={2} sm={3}>
+                      <php>
+                        <h5>Total</h5>
+                      </php>
+                      <form className={classes.container} noValidate>
+                        <TextField
+                          required
+                          id="Total_Parcial"
+                          name="xtotal"
+                          value={valor.xcantidad * buscarProducto.precio}
+                          disabled={true}
+                          onChange={handleInputChangex}
+                          fullWidth
+                        />
+                      </form>
+                    </Grid>
+                    <Grid item xs={12} lg={2} sm={3}>
+                      <php>
+                        <h5>.......................</h5>
+                      </php>
 
-                    
-                    
-                    
-                    
+                      <button onClick={HandleAddInsert}>Agregar lista</button>
+                    </Grid>
+                    <Grid item xs={12} lg={12} sm={3}>
+                      <div className="row my-4">
+                        <div className="col">
+                          <MaterialTable
+                            columns={columns}
+                            data={listaAfectacionParcela}
+                            title="Productos utilizados"
+                            actions={[
+                              {
+                                icon: "delete",
+                                tooltip: "Eliminar Afectación",
+                                onClick: (event, rowData) =>
+                                  HandleRemoveProducto(rowData),
+                              },
+                            ]}
+                            options={{
+                              actionsColumnIndex: -1,
+                            }}
+                            localization={{
+                              header: {
+                                actions: "Acciones",
+                              },
+                              toolbar: {
+                                searchTooltip: "Buscar",
+                                searchPlaceholder: "Buscar",
+                              },
+                              pagination: {
+                                labelRowsSelect: "Registros",
+                                firstTooltip: "Primera página",
+                                previousTooltip: "Página anterior",
+                                nextTooltip: "Siguiente página",
+                                lastTooltip: "Última página",
+                              },
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </Grid>
+
                     <Grid item xs={12} sm={12}>
                       <Button
                         variant="contained"
-                        onClick={() => peticionEditar()}
+                        onClick={() => peticionAgregar()}
                         size="small"
                         color="primary"
                       >

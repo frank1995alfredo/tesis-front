@@ -7,6 +7,8 @@ import URL from "../../configuration/URL";
 import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
 import valorToken from "../../configuration/valorToken";
+import soloLetras from "../../configuration/soloLetras"
+
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -28,10 +30,14 @@ const ModalEditarAfectacion = ({
   
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setAfectacionSeleccionado((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+
+    if(soloLetras(e)) {
+      setAfectacionSeleccionado((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    }
+ 
   };
   const styles = useStyles();
 

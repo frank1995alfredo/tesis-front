@@ -21,6 +21,9 @@ import PropTypes from "prop-types";
 import URL from "../../configuration/URL";
 import { useHistory } from "react-router-dom";
 import valorToken from "../../configuration/valorToken";
+import soloNumeros from "../../configuration/soloNumeros";
+import ModalAgregarRecurso from "../Actividades/ModalAgregarRecurso";
+import TablaActividad from "./TablaActividad";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -67,19 +70,39 @@ const FormAgregarActividad = () => {
   const [listaLabor, setListaLabor] = useState([]);
   const [listaTipoTrabajador, setListaTipoTrabajador] = useState([]);
 
+  const [modalInsertar, setModalInsertar] = useState(false);
+
+  //METODO PARA ABRIR EL MODAL
+  const abrirCerrarModalInsertar = () => {
+    setModalInsertar(!modalInsertar);
+  };
+
+  
   const history = useHistory();
   const cancelar = () => {
     history.push(`/actividades/actividades`);
   };
 
   const handleInputChange = (e) => {
+
     const { name, value } = e.target;
     setAgregarActividad({ ...agregarActividad, [name]: value });
 
   };
 
+  const validacionNumero = (e) => {
+    
+    const { name, value } = e.target;
+
+    if(soloNumeros(e)) {
+      setAgregarActividad({ ...agregarActividad, [name]: value });
+    }
+    
+  }
+
   //LISTAS
   useEffect(() => {
+    
     const abortController = new AbortController();
 
     const listaRecurso = async () => {
@@ -142,7 +165,6 @@ const FormAgregarActividad = () => {
       }
     };
 
-  
 
     const listaTrabajor = async () => {
       try {
@@ -197,6 +219,8 @@ const FormAgregarActividad = () => {
     hoy.getFullYear() + "-" + (hoy.getMonth() + 1) + "-" + hoy.getDate();
 
   const classes = useStyles();
+
+  const [symbolsArr] = useState(["e", "E", "+", "-", "."]);
 
   function TextMaskCustom(props) {
     const { inputRef, ...other } = props;
@@ -277,6 +301,16 @@ const FormAgregarActividad = () => {
                 <i className="fas fa-arrow-left"></i> Regresar
               </Link>
             </div>
+            <div className="col-auto">
+              <button
+                type="button"
+                className="btn btn-primary btn-sm"
+                onClick={abrirCerrarModalInsertar}
+              >
+                {" "}
+                <i className="fas fa-plus-circle "></i> Agregar recursos
+              </button>
+            </div>
           </div>
           <div className="row my-4">
             <div className="col">
@@ -353,14 +387,14 @@ const FormAgregarActividad = () => {
                         />
                       </form>
                     </Grid>
-
                     <Grid item xs={12} lg={2} sm={2}>
                       <TextField
                         required
                         id="avance"
                         name="avance"
                         label="Avance"
-                        onChange={handleInputChange}
+                        onChange={validacionNumero}
+                        value={agregarActividad.avance}
                         fullWidth
                       />
                     </Grid>
@@ -370,7 +404,7 @@ const FormAgregarActividad = () => {
                         id="total_actividad"
                         name="total_actividad"
                         label="Total Actividad"
-                        onChange={handleInputChange}
+                        onChange={validacionNumero}
                         fullWidth
                       />
                     </Grid>
@@ -397,7 +431,7 @@ const FormAgregarActividad = () => {
                       <TextField
                         label="Cantidad de recurso"
                         pattern="[0-9]{0,13}"
-                        onChange={handleInputChange}
+                        onChange={validacionNumero}
                         name="cantidad"
                         id="formatted-numberformat-input"
                       />
@@ -406,8 +440,9 @@ const FormAgregarActividad = () => {
                       <TextField
                         label="Costo del recurso"
                         pattern="[0-9]{0,13}"
-                        onChange={handleInputChange}
+                        onChange={validacionNumero}
                         name="costo"
+
                         id="formatted-numberformat-input"
                       />
                     </Grid>
@@ -430,6 +465,9 @@ const FormAgregarActividad = () => {
                         </Select>
                       </FormControl>
                     </Grid>
+                    <Grid item xs={12} sm={12}>
+                  
+                      </Grid>
                     <Grid item xs={12} sm={12}>
                       <Button
                         variant="contained"
@@ -454,7 +492,12 @@ const FormAgregarActividad = () => {
             </div>
           </div>
         </div>
+      
       </Navbar>
+      <ModalAgregarRecurso
+        abrirCerrarModalInsertar={abrirCerrarModalInsertar}
+        modalInsertar = {modalInsertar}
+      />
     </>
   );
 };

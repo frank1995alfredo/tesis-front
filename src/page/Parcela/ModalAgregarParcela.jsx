@@ -7,6 +7,7 @@ import URL from "../../configuration/URL";
 import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
 import valorToken from "../../configuration/valorToken";
+import soloNumeros from "../../configuration/soloNumeros";
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -34,6 +35,19 @@ const ModalAgregarParcela = ({
       [name]: value,
     }));
   };
+
+  const validacionNumero = (e) => {
+    
+    const { name, value } = e.target;
+
+    if(soloNumeros(e)) {
+      setParcelaSeleccionado((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    }
+    
+  }
 
   const agregarParcela = async () => {
     await axios
@@ -63,7 +77,8 @@ const ModalAgregarParcela = ({
         className={styles.inputMaterial}
         label="Numero"
         name="numero"
-        onChange={handleChange}
+        value={validacionNumero}
+        onChange={parcelaSeleccionado.numero}
       />
       
       <br />

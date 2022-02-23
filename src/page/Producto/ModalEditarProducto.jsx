@@ -6,6 +6,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import URL from "../../configuration/URL";
 import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
+import valorToken from "../../configuration/valorToken";
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -22,6 +23,8 @@ const ModalEditarProducto = ({
   setListaProducto
 
 }) => {
+
+  const token = valorToken();
   
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -33,7 +36,12 @@ const ModalEditarProducto = ({
   const styles = useStyles();
 
   const editarProducto = async() => {
-    await axios.put(`${URL}/editarProducto/`+ productoSeleccionado.id, productoSeleccionado)
+    console.log(listaProducto)
+    await axios.put(`${URL}/editarProducto/`+ productoSeleccionado.id, productoSeleccionado, {
+       headers: {
+            Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
+          },
+    })
     .then(response => {
       let productoNuevo = listaProducto;
       productoNuevo.map(producto => {
@@ -46,6 +54,7 @@ const ModalEditarProducto = ({
           producto.descripcion = productoSeleccionado.descripcion;
         }
       });
+      console.log(productoNuevo)
       setListaProducto(productoNuevo);
       Alerta.fire({
         icon: "success",

@@ -54,7 +54,6 @@ const ListaAfectacion = () => {
     id: 0,
     nombre_afectacion: "",
     decripcion: "",
-    
   });
 
   const seleccionarAfectacion = (afectacion, caso) => {

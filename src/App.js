@@ -21,15 +21,17 @@ import FormEditarActividad from "./page/Actividades/FormEditarActividad";
 import ListaProducto from "./page/Producto/ListaProducto";
 import Login from "./page/Login/Login";
 import FormCambiarPassword from "./page/Login/FormCambiarPassword";
+
 import FormEnviarEmailPassword from "./page/Login/FormEnviarEmailPassword";
 import ListaAfectacionParela from "./page/AfectacionParcela/ListaAfectacionParcela";
 
 import PrivateRoute from "./components/Routers/PrivateRoute";
 import AuthProvider from "./auth/AuthProvider";
 import NotFound from "./page/404/NotFound";
-import FormAgregarAfectacionParcela from "./page/AfectacionParcela/FormAgregarAfectacionParcela";
+import formAgregarAfectacionParcela from "./page/AfectacionParcela/formAgregarAfectacionParcela";
 import FormEditarAfectacionParcela from "./page/AfectacionParcela/FormEditarAfectacionParcela";
 import FormAgregarAPProducto from "./page/approducto/ListaAPProducto";
+import FormEditarAPProducto from "./page/approducto/FormEditarAPProducto";
 import ListaAPProducto from "./page/approducto/ListaAPProducto";
 
 function App() {
@@ -77,32 +79,39 @@ function App() {
             path="/actividades/afectacionParcela"
             component={ListaAfectacionParela}
           />
+
           <PrivateRoute
             exact
-            path="/actividades/afectacionParcela/agregarAfectacionParcela"
-            component={FormAgregarAfectacionParcela}
+            path="/actividades/actividades/agregarAfectacionParcela"
+            component={formAgregarAfectacionParcela}
           />
 
           <PrivateRoute
             exact
-            path="/actividades/afectacionParcela/:id/editarAfectacionParcela"
+            path="/actividades/actividades/:id/editarAfectacionParcela"
             component={FormEditarAfectacionParcela}
           />
 
           <PrivateRoute
             exact
-            path="/actividades/afectacionParcela/:id/agregarAPProducto"
+            path="/actividades/actividades/:id/agregarAPProducto"
             component={FormAgregarAPProducto}
           />
 
           <PrivateRoute
             exact
-            path="/actividades/afectacionParcela/listaAPProducto"
+            path="/actividades/actividades/:id/editarAPProducto"
+            component={FormEditarAPProducto}
+          />
+
+          <PrivateRoute
+            exact
+            path="/actividades/actividades/listaAPProducto"
             component={ListaAPProducto}
           />
 
           <PrivateRoute exact path="/usuarios" component={ListaUsuarios} />
-          <PrivateRoute exact path="/parcela" component={ListaParcela} />
+          <PrivateRoute exact path="/actividades/parcela" component={ListaParcela} />
 
           <PrivateRoute exact path="/bodega" component={Bodega} />
           <PrivateRoute

@@ -99,7 +99,7 @@ const ListaRecursos = () => {
                 onClick={abrirCerrarModalInsertar}
               >
                 {" "}
-                <i className="fas fa-plus-circle "></i> Nueva Recursos
+                <i className="fas fa-plus-circle "></i> Nuevo Recurso
               </button>
             </div>
             <div className="col-auto">

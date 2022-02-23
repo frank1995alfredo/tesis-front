@@ -7,6 +7,7 @@ import URL from "../../configuration/URL";
 import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
 import valorToken from "../../configuration/valorToken";
+import soloLetras from "../../configuration/soloLetras";
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -27,11 +28,15 @@ const ModalEditarLabor = ({
   const token = valorToken()
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setLaborSeleccionado((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+    
+    if(soloLetras(e)) {
+      const { name, value } = e.target;
+      setLaborSeleccionado((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    }
+  
   };
   const styles = useStyles();
 

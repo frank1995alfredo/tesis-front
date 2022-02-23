@@ -25,6 +25,7 @@ const Actividades = () => {
               <i class="fas fa-list-alt fs-1 primary-text border rounded-full secondary-bg p-3"></i>
             </div>
           </div>
+          
           {auth.isAdmin() && (
                   <div class="col-md-3">
                   <div class="p-3 bg-white shadow-sm d-flex justify-content-around align-items-center rounded">
@@ -46,7 +47,7 @@ const Actividades = () => {
             <div class="p-3 bg-white shadow-sm d-flex justify-content-around align-items-center rounded">
               <div>
                 <Link
-                  to="/parcela"
+                  to="/actividades/parcela"
                   className="list-group-item list-group-item-action bg-transparent second-text active"
                 >
                   <p className="text-center">Parcelas</p>
