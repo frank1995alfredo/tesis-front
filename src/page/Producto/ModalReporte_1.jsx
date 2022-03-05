@@ -49,6 +49,8 @@ const ModalReporte_1 = ({
       let response = await fetch(
         `${URL}/buscarProductoFechaCompra/${productoSeleccionado.fecha_compra}`, {
            headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
           },
         }
@@ -64,36 +66,129 @@ const ModalReporte_1 = ({
   }
 
   async function listaProducto2() {
-    try {
-      let response = await fetch(`${URL}/listaProducto`, {
-         headers: {
-            Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
-          },
-      });
-      response = await response.json();
-      console.log(seleccion == 1);
-      if (seleccion == 0) {
-        console.log("res");
-        const arreglos = response.data.filter((Ser) => Ser.cantidad > 0);
-        setListaProducto(arreglos);
-        setListaPDF(arreglos);
-      } else {
-        if (seleccion == 1) {
-          const arreglos = response.data.filter((Ser) => Ser.cantidad === 0);
-          setListaProducto(arreglos);
-          setListaPDF(arreglos);
-        } else {
-          if (seleccion == 2) {
-            setListaProducto(response.data);
-            setListaPDF(response.data);
-          } else {
-          }
-        }
-      }
-    } catch (error) {
-      console.log(error);
+
+    let response = await fetch(`${URL}/listaProducto`, {
+       headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+          Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
+        },
+    });
+    response = await response.json();
+    console.log(seleccion == 1);
+    
+    let suma = 0
+    const sumaTotal = () => {   
+      response.data.map(lista => suma += lista.precio)
+      return suma
     }
-  }
+    const doc = new jsPDF();
+    
+    let hoy = new Date();
+    let fechaActual =
+      hoy.getFullYear() + "/" + (hoy.getMonth() + 1) + "/" + hoy.getDate();
+    doc.text("Reporte de productos", 74, 10); //le damos las coordenadas x = 70, y = 10
+    doc.text("Fecha: " + `${fechaActual}`, 10, 20);
+    doc.text("Persona a cargo: " + usuario, 114, 20);
+    if (seleccion === 0) {
+      console.log("res");
+      
+      doc.autoTable({
+        startY: 30,
+        styles: {
+          halign: "center",
+        },
+        head: [
+          [
+            "#",
+            "Producto",
+            "Existencia",
+            "Precio",
+            "Fecha Compra",
+            "Fecha Caducidad",
+            "Estado"
+          ],
+        ],
+        body: response.data.filter((Ser) => Ser.cantidad > 0 || Ser.cantidad < 1 ).map((lista, index) => [
+          index + 1,
+          lista.nombre,
+          lista.cantidad,
+          lista.precio,
+          lista.fecha_compra,
+          lista.fecha_caducidad,
+          ( lista.estado ? "En existencia" : "Agotado"),
+        ]),
+        
+      });
+      
+    } else {
+      if (seleccion === 1) {
+        doc.autoTable({
+          startY: 30,
+          styles: {
+            halign: "center",
+          },
+          head: [
+            [
+              "#",
+              "Producto",
+              "Existencia",
+              "Precio",
+              "Fecha Compra",
+              "Fecha Caducidad",
+              "Estado"
+            ],
+          ],
+          body: response.data.filter((Ser) => Ser.cantidad === 0).map((lista, index) => [
+            index + 1,
+            lista.nombre,
+            lista.cantidad,
+            lista.precio,
+            lista.fecha_compra,
+            lista.fecha_caducidad,
+            (index = lista.estado ? "En existencia" : "Agotado"),
+          ]),
+        });
+      } else {
+          doc.autoTable({
+            startY: 30,
+            styles: {
+              halign: "center",
+            },
+            head: [
+              [
+                "#",
+                "Producto",
+                "Existencia",
+                "Precio",
+                "Fecha Compra",
+                "Fecha Caducidad",
+                "Estado"
+              ],
+            ],
+            body: response.data.filter((Ser) => Ser.cantidad >= 1).map((lista, index) => [
+              index + 1,
+              lista.nombre,
+              lista.cantidad,
+              `$`+lista.precio,
+              lista.fecha_compra,
+              lista.fecha_caducidad,
+              (lista.estado ? "En existencia" : "Agotado"),
+            ]),
+          });
+          
+         
+      }
+      let finalY = (doc).lastAutoTable.finalY;
+      doc.text("Gran total productos: $" + `${sumaTotal()}`, 70, finalY + 10);    
+    }
+
+    
+    
+    let fechaActual2 =
+      hoy.getFullYear() + "" + (hoy.getMonth() + 1) + "" + hoy.getDate();
+    doc.save("reporteActividades" + `${fechaActual2}` + ".pdf");
+}
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -106,11 +201,13 @@ const ModalReporte_1 = ({
         let response = await fetch(`${URL}/listaProducto`, {
           signal: abortController.signal,
            headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
           },
         });
         response = await response.json();
-        console.log(seleccion);
+        console.log(response.data);
         if (seleccion === 0) {
           const arreglos = response.data.filter((Ser) => Ser.cantidad === 0);
           setListaProducto(arreglos);
@@ -128,13 +225,35 @@ const ModalReporte_1 = ({
       }
     };
 
+       //USUARIO ACTUAL
+       const usuarioActual = async () => {
+        try {
+          let response = await fetch(`${URL}/usuarioActual`, {
+            signal: abortController.signal,
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
+            },
+          });
+  
+          response = await response.json();
+          setUsuario(response.data);
+        } catch (error) {
+          console.log(error);
+          if (abortController.signal.aborted) {
+            console.log(abortController.signal.aborted);
+          } else throw error;
+        }
+      };
+  
+    usuarioActual()
     listaProducto();
     return () => abortController.abort();
   }, []);
 
   const genera = (e) => {
     listaProducto2();
-    pdfActividades();
   };
   const genera2 = (e) => {
     listaProductoFechaCompra();
@@ -157,36 +276,9 @@ const ModalReporte_1 = ({
     },
   }));
   const styles = useStyles();
-  const pdfAnio2 = (anio1) => {
-    const doc = new jsPDF();
-    let hoy = new Date();
-    let fechaActual =
-      hoy.getFullYear() + "/" + (hoy.getMonth() + 1) + "/" + hoy.getDate();
-    doc.text("Reporte de actividades", 74, 10); //le damos las coordenadas x = 70, y = 10
-    doc.text("Fecha: " + `${fechaActual}`, 10, 20);
-    doc.text("Persona a cargo: " + usuario, 114, 20);
-    doc.autoTable({
-      startY: 30,
-      styles: {
-        halign: "center",
-      },
-      head: [["#", "Labor", "Trabajador", "Recurso", "Total Recurso", "Año"]],
-      body: listaPDF
-        .filter((list) => list.anio === anio1)
-        .map((lista, index) => [
-          index + 1,
-          lista.nombre,
-          lista.precio,
-          lista.cantidad,
-          lista.descripcion,
-        ]),
-    });
-
-    let fechaActual2 =
-      hoy.getFullYear() + "_" + (hoy.getMonth() + 1) + "_" + hoy.getDate();
-    doc.save("reporteActividades" + `${fechaActual2}` + ".pdf");
-  };
+ 
   const pdfActividades = () => {
+    
     const doc = new jsPDF();
     let hoy = new Date();
     let fechaActual =

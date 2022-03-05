@@ -8,6 +8,7 @@ import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
 import valorToken from "../../configuration/valorToken";
 import soloLetras from "../../configuration/soloLetras";
+import validacionEntrada from "../../configuration/validacionEntrada";
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -42,9 +43,19 @@ const ModalEditarLabor = ({
 
 
   const editarLabor = async() => {
+
+    if((validacionEntrada(laborSeleccionado.nombre))) {
+      Alerta.fire({
+        icon: "error",
+        title: "LLene todos los campos.",
+      });
+    } else {
+
     await axios.put(`${URL}/editarTipoLabor/`+ laborSeleccionado.id, laborSeleccionado, {
       headers: 
       {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
       }
     })
@@ -64,6 +75,7 @@ const ModalEditarLabor = ({
     }).catch(error => {
       console.log(error);
     })
+  }
   }
 
 

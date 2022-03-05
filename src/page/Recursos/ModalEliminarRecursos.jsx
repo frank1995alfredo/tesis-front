@@ -14,8 +14,8 @@ const ModalEliminarRecursos = ({
   modalEliminar,
   abrirCerrarModalEliminar,
   listaRecurso,
-  setListaRecurso
- 
+  setListaRecurso,
+  setRecursosSeleccionado
 }) => {
 
   const token = valorToken()
@@ -25,6 +25,8 @@ const ModalEliminarRecursos = ({
     await axios.delete(`${URL}/eliminarRecurso/` + recursosSeleccionado.id, {
       headers: 
       {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
       }
     })
@@ -36,6 +38,7 @@ const ModalEliminarRecursos = ({
           icon: "success",
           title: "Registro eliminado.",
         });
+        setRecursosSeleccionado("")
         abrirCerrarModalEliminar();
       })
       .catch((error) => {

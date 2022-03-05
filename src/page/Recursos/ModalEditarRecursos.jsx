@@ -9,6 +9,7 @@ import Alerta from "../../components/Alerts/Alerta";
 import valorToken from "../../configuration/valorToken";
 import soloNumeros from "../../configuration/soloNumeros";
 import soloLetras from "../../configuration/soloLetras";
+import validacionEntrada from "../../configuration/validacionEntrada";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -47,29 +48,41 @@ const ModalEditarRecursos = ({
  
   
   const editarRecurso = async() => {
-    await axios.put(`${URL}/editarRecurso/`+ recursosSeleccionado.id, recursosSeleccionado, {
-      headers: 
-      {
-        Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
-      }
-    })
-    .then(response => {
-      let recursoNuevo = listaRecurso;
-      recursoNuevo.map(recurso => {
-        if(recurso.id === recursosSeleccionado.id) {
-          recurso.nombre = recursosSeleccionado.nombre;
-          recurso.caracteristica = recursosSeleccionado.caracteristica;
-        }
-      });
-      setListaRecurso(recursoNuevo);
+
+    if((validacionEntrada(recursosSeleccionado.nombre)) || (validacionEntrada(recursosSeleccionado.caracteristica))) {
+      
       Alerta.fire({
-        icon: "success",
-        title: "Registro editado.",
+        icon: "error",
+        title: "LLene todos los campos.",
       });
-      abrirCerrarModalEditar();
-    }).catch(error => {
-      console.log(error);
-    })
+    } else {
+      await axios.put(`${URL}/editarRecurso/`+ recursosSeleccionado.id, recursosSeleccionado, {
+        headers: 
+        {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
+        }
+      })
+      .then(response => {
+        let recursoNuevo = listaRecurso;
+        recursoNuevo.map(recurso => {
+          if(recurso.id === recursosSeleccionado.id) {
+            recurso.nombre = recursosSeleccionado.nombre;
+            recurso.caracteristica = recursosSeleccionado.caracteristica;
+          }
+        });
+        setListaRecurso(recursoNuevo);
+        Alerta.fire({
+          icon: "success",
+          title: "Registro editado.",
+        });
+        setRecursosSeleccionado("")
+        abrirCerrarModalEditar();
+      }).catch(error => {
+        console.log(error);
+      })
+    }
   }  
 
 

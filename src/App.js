@@ -1,11 +1,12 @@
 import {
-  BrowserRouter as Router,
+  HashRouter as Router,
   Switch,
   Route,
   Link,
   useParams,
   useRouteMatch,
 } from "react-router-dom";
+
 
 import Dashboard from "./page/Dashboard/Dashboard";
 import ListaLabor from "./page/Labor/ListaLabor";
@@ -30,7 +31,7 @@ import AuthProvider from "./auth/AuthProvider";
 import NotFound from "./page/404/NotFound";
 import formAgregarAfectacionParcela from "./page/AfectacionParcela/formAgregarAfectacionParcela";
 import FormEditarAfectacionParcela from "./page/AfectacionParcela/FormEditarAfectacionParcela";
-import FormAgregarAPProducto from "./page/approducto/ListaAPProducto";
+import FormAgregarAPProducto from "./page/approducto/FormAgregarAPProducto";
 import FormEditarAPProducto from "./page/approducto/FormEditarAPProducto";
 import ListaAPProducto from "./page/approducto/ListaAPProducto";
 
@@ -43,7 +44,7 @@ function App() {
           <Route
             exact
             path="/cambiarPassword"
-            component={FormEnviarEmailPassword}
+            component={FormCambiarPassword}
           />
 
           <PrivateRoute exact path="/" component={Dashboard} />

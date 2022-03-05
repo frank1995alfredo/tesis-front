@@ -24,6 +24,8 @@ const ModalEliminarActividad = ({
     await axios.delete(`${URL}/eliminarActividad/` + actividadSeleccionada.id, {
       headers: 
       {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
       }
     })

@@ -1,3 +1,3 @@
-const URL = 'http://apiarroz13.000webhostapp.com/api';
+const URL = 'https://sisarroz.losguirazoles.com/api';
 
 export default URL;

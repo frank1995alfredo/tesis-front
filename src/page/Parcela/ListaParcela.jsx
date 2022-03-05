@@ -38,7 +38,7 @@ const ListaParcela = () => {
   const [modalEditar, setModalEditar] = useState(false);
   const [parcelaSeleccionado, setParcelaSeleccionado] = useState({
     id: 0,
-    numero: 0,
+    numero: "",
     extencion: "",
     descripcion: "",
   });
@@ -75,6 +75,8 @@ const ListaParcela = () => {
           signal: abortController.signal,
           headers: 
           {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
           }
         });

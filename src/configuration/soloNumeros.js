@@ -5,9 +5,7 @@ const soloNumeros = (e) => {
     if(e.target.value === '' || soloNumero.test(e.target.value)) {
         return true;
     } 
-    
     return false;
-
 }
 
 export default soloNumeros

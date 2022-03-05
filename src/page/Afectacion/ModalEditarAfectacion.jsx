@@ -8,7 +8,7 @@ import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
 import valorToken from "../../configuration/valorToken";
 import soloLetras from "../../configuration/soloLetras"
-
+import validacionEntrada from "../../configuration/validacionEntrada";
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -42,9 +42,19 @@ const ModalEditarAfectacion = ({
   const styles = useStyles();
 
   const editarAfectacion = async() => {
+
+    if((validacionEntrada(afectacionSeleccionado.nombre_afectacion)) || (validacionEntrada(afectacionSeleccionado.descripcion))) {
+      Alerta.fire({
+        icon: "error",
+        title: "LLene todos los campos.",
+      });
+    } else {
+
     await axios.put(`${URL}/editarAfectacion/`+ afectacionSeleccionado.id, afectacionSeleccionado, {
       headers: 
       {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
       }
     })
@@ -65,6 +75,7 @@ const ModalEditarAfectacion = ({
     }).catch(error => {
       console.log(error);
     })
+  }
   }  
 
   return (

@@ -56,13 +56,9 @@ const ModalAgregarRecurso = ({ abrirCerrarModalInsertar, modalInsertar }) => {
     const { name, value } = e.target;
     setData({ ...data, [name]: value });
 
-    console.log(data);
+    console.log(e.target.name);
   };
 
-  const handleInputChange2 = (e) => {
-    const { name, value } = e.target;
-    setData({ ...data.datos, [name]: value });
-  };
 
   const agregarData = (e) => {
     e.preventDefault();

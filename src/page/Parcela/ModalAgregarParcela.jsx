@@ -8,6 +8,7 @@ import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
 import valorToken from "../../configuration/valorToken";
 import soloNumeros from "../../configuration/soloNumeros";
+import validacionEntrada from "../../configuration/validacionEntrada";
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -25,7 +26,6 @@ const ModalAgregarParcela = ({
 }) => {
 
   const token = valorToken()
-
   const styles = useStyles();
 
   const handleChange = (e) => {
@@ -36,24 +36,31 @@ const ModalAgregarParcela = ({
     }));
   };
 
-  const validacionNumero = (e) => {
-    
-    const { name, value } = e.target;
 
+  const validacionNumero = (e) => {
+   const { name, value } = e.target;
     if(soloNumeros(e)) {
       setParcelaSeleccionado((prevState) => ({
         ...prevState,
         [name]: value,
       }));
     }
-    
   }
-
+  
   const agregarParcela = async () => {
-    await axios
-      .post(`${URL}/crearParcela`, parcelaSeleccionado, {
+
+    if((validacionEntrada(parcelaSeleccionado.numero)) || (validacionEntrada(parcelaSeleccionado.extencion)) ||
+      (validacionEntrada(parcelaSeleccionado.descripcion))) {
+      Alerta.fire({
+        icon: "error",
+        title: "LLene todos los campos.",
+      });
+    } else {
+        await axios.post(`${URL}/crearParcela`, parcelaSeleccionado, {
         headers: 
         {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
         }
       })
@@ -63,11 +70,13 @@ const ModalAgregarParcela = ({
           icon: "success",
           title: "Registro agregado.",
         });
+        setParcelaSeleccionado("")
         abrirCerrarModalInsertar();
       })
       .catch((error) => {
         console.log(error);
       });
+    }
   };
 
   return (
@@ -77,8 +86,8 @@ const ModalAgregarParcela = ({
         className={styles.inputMaterial}
         label="Numero"
         name="numero"
-        value={validacionNumero}
-        onChange={parcelaSeleccionado.numero}
+        value={parcelaSeleccionado.numero}
+        onChange={validacionNumero}
       />
       
       <br />

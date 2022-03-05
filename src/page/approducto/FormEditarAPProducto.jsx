@@ -339,11 +339,11 @@ const FormEditarAPProducto = ({
     }
   };
   /// Elimina un iten de la tabla de productos
-
   const HandleRemoveProducto = (produc) => {
+    console.log(produc);
     setProductoSeleccionado(produc);
     const arreglos = listaAfectacionParcela.filter(
-      (Ser) => Ser.idproducto !== productoSeleccionado.idproducto
+      (Ser) => Ser.idproducto !== produc.idproducto
     );
     setListaAfectacionParcela(arreglos);
   };
@@ -499,7 +499,7 @@ const FormEditarAPProducto = ({
             <div className="col-auto">
               {" "}
               <Link
-                to="/actividades/actividades"
+                to="/actividades/afectacionParcela"
                 type="button"
                 className="btn btn-secondary btn-sm"
               >

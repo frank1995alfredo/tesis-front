@@ -6,6 +6,8 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import URL from "../../configuration/URL";
 import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
+import valorToken from "../../configuration/valorToken";
+import validacionEntrada from "../../configuration/validacionEntrada";
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -30,22 +32,44 @@ const ModalAgregarProducto = ({
       ...prevState,
       [name]: value,
     }));
+
+    console.log(productoSeleccionado)
   };
 
+  const token = valorToken();
+
   const agregarProducto = async () => {
+
+    if((validacionEntrada(productoSeleccionado.nombre)) || (validacionEntrada(productoSeleccionado.descripcion)) ||
+      (validacionEntrada(productoSeleccionado.precio)) || (validacionEntrada(productoSeleccionado.cantidad))) {
+      
+      Alerta.fire({
+        icon: "error",
+        title: "LLene todos los campos.",
+      });
+    } else {
+
     await axios
-      .post(`${URL}/crearProducto`, productoSeleccionado)
+      .post(`${URL}/crearProducto`, productoSeleccionado, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
+        },
+      })
       .then((response) => {
         setListaProducto(listaProducto.concat(response.data.data[0]));
         Alerta.fire({
           icon: "success",
           title: "Registro agregado.",
         });
+        setProductoSeleccionado("")
         abrirCerrarModalInsertar();
       })
       .catch((error) => {
         console.log(error);
       });
+    }
   };
 
   return (
@@ -55,6 +79,7 @@ const ModalAgregarProducto = ({
         className={styles.inputMaterial}
         label="Nombre"
         name="nombre"
+        value={productoSeleccionado.nombre_producto}
         onChange={handleChange}
       />
       <br />
@@ -65,6 +90,7 @@ const ModalAgregarProducto = ({
         defaultValue="2017-05-24"
         name="fecha_compra"
         onChange={handleChange}
+      
         className={styles.inputMaterial}
         />
       <br />
@@ -75,6 +101,7 @@ const ModalAgregarProducto = ({
         defaultValue="2017-05-24"
         name="fecha_caducidad"
         onChange={handleChange}
+       
         className={styles.inputMaterial}
         />
       <br />
@@ -82,6 +109,7 @@ const ModalAgregarProducto = ({
         className={styles.inputMaterial}
         label="Precio"
         name="precio"
+        value={productoSeleccionado.precio}
         onChange={handleChange}
       />
       <br />
@@ -89,6 +117,7 @@ const ModalAgregarProducto = ({
         className={styles.inputMaterial}
         label="Cantidad"
         name="cantidad"
+        value={productoSeleccionado.cantidad}
         onChange={handleChange}
       />
       <br />
@@ -96,6 +125,7 @@ const ModalAgregarProducto = ({
         className={styles.inputMaterial}
         label="Descripción"
         name="descripcion"
+        value={productoSeleccionado.descripcion}
         onChange={handleChange}
       />
       <br />

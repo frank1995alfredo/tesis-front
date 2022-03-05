@@ -8,6 +8,7 @@ import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
 import valorToken from "../../configuration/valorToken";
 import soloLetras from "../../configuration/soloLetras";
+import validacionEntrada from "../../configuration/validacionEntrada";
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -41,10 +42,20 @@ const ModalAgregarLabor = ({
   };
 
   const agregarLabor = async () => {
+
+    if((validacionEntrada(laborSeleccionado.nombre))) {
+      Alerta.fire({
+        icon: "error",
+        title: "LLene todos los campos.",
+      });
+    } else {
+
     await axios
       .post(`${URL}/crearTipoLabor`, laborSeleccionado, {
         headers: 
         {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
         }
       })
@@ -54,11 +65,13 @@ const ModalAgregarLabor = ({
           icon: "success",
           title: "Registro agregado.",
         });
+        setLaborSeleccionado("")
         abrirCerrarModalInsertar();
       })
       .catch((error) => {
         console.log(error);
       });
+    }
   };
 
 

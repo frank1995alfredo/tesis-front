@@ -20,6 +20,8 @@ import Alerta from "../../components/Alerts/Alerta";
 import PropTypes from "prop-types";
 import URL from "../../configuration/URL";
 import { useHistory } from "react-router-dom";
+import valorToken from "../../configuration/valorToken";
+import validacionEntrada from "../../configuration/validacionEntrada";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -55,13 +57,13 @@ const FormAgregarAfectacionParcela = () => {
   const [listaParcela, setListaParcela] = useState([]);
   const [listaAfectacion, setListaAfectacion] = useState([]);
   
-
+  const token = valorToken();
   const history = useHistory();
   const cancelar = () => {
     history.push(``);
   };
   const PeticionRegresa = () => {
-    history.push(`/AfectacionParcela`);
+    history.push(`/actividades/afectacionParcela`);
   };
 
   const handleInputChange = (e) => {
@@ -74,12 +76,13 @@ const FormAgregarAfectacionParcela = () => {
   useEffect(() => {
     const abortController = new AbortController();
 
-    
-
     const listaParcela = async () => {
       try {
         let response = await fetch(`${URL}/listaParcela`, {
           signal: abortController.signal,
+          headers: {
+            Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
+          },
         });
         response = await response.json();
         setListaParcela(response.data);
@@ -96,6 +99,9 @@ const FormAgregarAfectacionParcela = () => {
       try {
         let response = await fetch(`${URL}/listaAfectacion`, {
           signal: abortController.signal,
+          headers: {
+            Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
+          },
         });
         response = await response.json();
         setListaAfectacion(response.data);
@@ -116,22 +122,33 @@ const FormAgregarAfectacionParcela = () => {
   }, []);
 
   const peticionAgregar = async () => {
+
+    if((validacionEntrada(agregarAfectacionParcela.idafectacion)) || (validacionEntrada(agregarAfectacionParcela.idparcela) ||
+      (validacionEntrada(agregarAfectacionParcela.observacion)))) {
+      Alerta.fire({
+        icon: "error",
+        title: "LLene todos los campos.",
+      });
+    } else {
+
     await axios
-      .post(`${URL}/crearAfectacionParcela`, agregarAfectacionParcela)
+      .post(`${URL}/crearAfectacionParcela`, agregarAfectacionParcela, {
+        headers: {
+          Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
+        },
+      })
       .then((response) => {
         setAgregarAfectacionParcela(initialFormState);
         Alerta.fire({
           icon: "success",
           title: "Registro agregado.",
-          
         });
         PeticionRegresa()
-        
       })
       .catch((error) => {
         console.log(error);
       });
-    
+    }
   };
 
   var hoy = new Date();

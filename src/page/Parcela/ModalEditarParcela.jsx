@@ -7,6 +7,8 @@ import URL from "../../configuration/URL";
 import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
 import valorToken from "../../configuration/valorToken";
+import soloNumeros from "../../configuration/soloNumeros";
+import validacionEntrada from "../../configuration/validacionEntrada";
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -33,12 +35,31 @@ const ModalEditarParcela = ({
       [name]: value,
     }));
   };
+
+  const validacionNumero = (e) => {
+    const { name, value } = e.target;
+     if(soloNumeros(e)) {
+       setParcelaSeleccionado((prevState) => ({
+         ...prevState,
+         [name]: value,
+       }));
+     }
+   }
   const styles = useStyles();
 
   const editarParcela = async() => {
+    if((validacionEntrada(parcelaSeleccionado.numero)) || (validacionEntrada(parcelaSeleccionado.extencion) ||
+    (validacionEntrada(parcelaSeleccionado.descripcion)))) {
+    Alerta.fire({
+      icon: "error",
+      title: "LLene todos los campos.",
+    });
+  } else {
     await axios.put(`${URL}/editarParcela/`+ parcelaSeleccionado.id, parcelaSeleccionado, {
       headers: 
       {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
       }
     })
@@ -61,6 +82,7 @@ const ModalEditarParcela = ({
       console.log(error);
     })
   }
+  }
 
   return (
     <Modal open={modalEditar} close={abrirCerrarModalEditar}>
@@ -70,7 +92,7 @@ const ModalEditarParcela = ({
         label="Numero"
         name="numero"
         value={parcelaSeleccionado.numero}
-        onChange={handleChange}
+        onChange={validacionNumero}
       />
       <br />
       <TextField

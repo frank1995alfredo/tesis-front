@@ -24,6 +24,8 @@ const ModalEliminarParcela = ({
     await axios.delete(`${URL}/eliminarParcela/` + parcelaSeleccionado.id, {
       headers: 
       {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
       }
     })

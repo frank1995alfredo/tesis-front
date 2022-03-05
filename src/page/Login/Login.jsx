@@ -49,7 +49,6 @@ const Login = () => {
 
   const classes = useStyles();
 
-
   const [mostrarPassword, setMostrarPassword] = useState({
     showPassword: false,
   });
@@ -93,8 +92,10 @@ const Login = () => {
         console.log(error)
       });
   };
-
-  const login2 = async() => {
+ 
+         
+/*
+  const login2 = async() => {         
     auth.login() 
     try {
       let config = {
@@ -118,7 +119,7 @@ const Login = () => {
       console.log(error)
     }
   }
-  
+  */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setDataLogin((prevState) => ({
@@ -128,6 +129,7 @@ const Login = () => {
     console.log(dataLogin)
 
   };
+
 
   return (
     <body>
@@ -182,7 +184,7 @@ const Login = () => {
                   </FormControl>
                   </div>
                  
-                  <button type="submit" class="btn btn-success btn-sm" onClick={() => login2()}>
+                  <button type="submit" class="btn btn-success btn-sm" onClick={() => login()}>
                     Ingresar
                   </button>
                 </div>

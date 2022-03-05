@@ -70,6 +70,8 @@ const ListaRecursos = () => {
           signal: abortController.signal,
           headers: 
           {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
           }
         });
@@ -158,7 +160,6 @@ const ListaRecursos = () => {
         recursosSeleccionado={recursosSeleccionado}
         abrirCerrarModalInsertar={abrirCerrarModalInsertar}
         modalInsertar={modalInsertar}
-        setRecursosSeleccionado={setRecursosSeleccionado}
         listaRecurso={listaRecurso}
         setListaRecurso={setListaRecurso}
       />
@@ -168,6 +169,7 @@ const ListaRecursos = () => {
         modalEliminar={modalEliminar}
         listaRecurso={listaRecurso}
         setListaRecurso={setListaRecurso}
+        setRecursosSeleccionado={setRecursosSeleccionado}
       />
       <ModalEditarRecursos
         setRecursosSeleccionado={setRecursosSeleccionado}

@@ -8,7 +8,7 @@ import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
 import valorToken from "../../configuration/valorToken";
 import soloLetras from "../../configuration/soloLetras"
-
+import validacionEntrada from "../../configuration/validacionEntrada";
 
 const useStyles = makeStyles((theme) => ({
   inputMaterial: {
@@ -42,10 +42,20 @@ const ModalAgregarAfectacion = ({
   };
 
   const agregarAfectacion = async () => {
+
+    if((validacionEntrada(afectacionSeleccionado.nombre_afectacion)) || (validacionEntrada(afectacionSeleccionado.descripcion))) {
+    Alerta.fire({
+      icon: "error",
+      title: "LLene todos los campos.",
+    });
+  } else {
+
     await axios
       .post(`${URL}/crearAfectacion`, afectacionSeleccionado, {
         headers: 
         {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
         }
       })
@@ -60,7 +70,9 @@ const ModalAgregarAfectacion = ({
       .catch((error) => {
         console.log(error);
       });
+    }
   };
+  
 
   return (
     <Modal open={modalInsertar} close={abrirCerrarModalInsertar}>

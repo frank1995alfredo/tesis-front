@@ -12,6 +12,7 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import valorToken from "../../configuration/valorToken";
 import soloLetras from "../../configuration/soloLetras";
+import validacionEntrada from "../../configuration/validacionEntrada";
 
 
 
@@ -57,10 +58,22 @@ const ModalAgregarUsuario = ({
 
 
   const agregarUsuario = async () => {
+
+    if((validacionEntrada(usuarioSeleccionado.nombre)) || (validacionEntrada(usuarioSeleccionado.nombre)) ||
+    (validacionEntrada(usuarioSeleccionado.apellido)) ||  (validacionEntrada(usuarioSeleccionado.cedula)) || 
+    (validacionEntrada(usuarioSeleccionado.tipousuario)) || (validacionEntrada(usuarioSeleccionado.email))) {
+      Alerta.fire({
+        icon: "error",
+        title: "LLene todos los campos.",
+      });
+    } else {
+
     await axios
       .post(`${URL}/agregarUsuario`, usuarioSeleccionado, {
         headers: 
         {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
         }
       })
@@ -75,6 +88,7 @@ const ModalAgregarUsuario = ({
       .catch((error) => {
         console.log(error);
       });
+    }
   };
 
   const select = makeStyles((theme) => ({

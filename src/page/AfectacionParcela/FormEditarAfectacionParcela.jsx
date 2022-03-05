@@ -23,6 +23,7 @@ import URL from "../../configuration/URL";
 import { useHistory } from "react-router-dom";
 import { Checkbox } from "@material-ui/core";
 import valorToken from "../../configuration/valorToken";
+import validacionEntrada from "../../configuration/validacionEntrada";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -47,68 +48,98 @@ const FormeditarAfectacionParcela = () => {
   };
   const selecciona = [
     {
-      value:-1,label:'Selecciona una opcion'
+      value: -1,
+      label: "Selecciona una opcion",
     },
     {
-      value:0,label:'Inactivo'
-    },{
-      value:1,label:'Activo'
-    }
-  ]
-
-   const token = valorToken();
+      value: 0,
+      label: "Inactivo",
+    },
+    {
+      value: 1,
+      label: "Activo",
+    },
+  ];
+  const options = [
+    { value: "0", Label: "Inactivo" },
+    { value: "1", Label: "Activo" },
+  ];
 
   let { id } = useParams();
-  const [editarAfectacionParcela, setEditarAfectacionParcela] = useState(initialFormState);
+  const [editarAfectacionParcela, setEditarAfectacionParcela] =
+    useState(initialFormState);
   const [producto, setProducto] = useState([]);
   const [afectacion, setAfectacion] = useState([]);
   const [parcela, setParcela] = useState([]);
   const [recurso, setRecurso] = useState([]);
-
+  const token = valorToken();
   const countRef = useRef(0);
-const va = 0;
+  const va = 0;
   async function buscarAfectacionParcela() {
+    const abortController = new AbortController();
     try {
-      let response = await fetch(`${URL}/buscarAfectacionParcela/${id}`);
+      let response = await fetch(`${URL}/buscarAfectacionParcela/${id}`, {
+        signal: abortController.signal,
+        headers: {
+          Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
+        },
+      });
       response = await response.json();
-     
-          setEditarAfectacionParcela(response.data[0]);
-          console.log(response.data)    
-      
+
+      setEditarAfectacionParcela(response.data[0]);
+      console.log(response.data);
     } catch (error) {
       console.log(error);
     }
-  };
+  }
+
   const peticionEditar = async () => {
+    const abortController = new AbortController();
+
+    
+    if((validacionEntrada(editarAfectacionParcela.idafectacion)) || (validacionEntrada(editarAfectacionParcela.idparcela) ||
+      (validacionEntrada(editarAfectacionParcela.observacion)))) {
+      Alerta.fire({
+        icon: "error",
+        title: "LLene todos los campos.",
+      });
+    } else {
+
     try {
       await axios
-        .put(`${URL}/editarAfectacionParcela/${id}`, editarAfectacionParcela, {
+        .put(
+          `${URL}/editarAfectacionParcela/${id}`,
+          editarAfectacionParcela,
+          { signal: abortController.signal,
             headers: {
-                  Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
-              },
-        })
+              Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
+            },}
+        )
         .then((response) => {
-            setEditarAfectacionParcela(initialFormState);
+          setEditarAfectacionParcela(initialFormState);
+          cancelar()
           Alerta.fire({
             icon: "success",
             title: "Registro editado.",
           });
-         
         });
     } catch (error) {
       console.log(error);
     }
-  };
-  
+  }
+}
+
   //////////////////////////////////////////////////////////////
   //Codigo funciona
-  //funcion para listar los labores
+ 
   async function Afectacion() {
+    const abortController = new AbortController();
     try {
       let response = await fetch(`${URL}/listaAfectacion`, {
-         headers: {
-                  Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
-              },
+        signal: abortController.signal,
+        headers: {
+          Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
+        },
       });
       response = await response.json();
       setAfectacion(response.data);
@@ -119,11 +150,13 @@ const va = 0;
 
   //funcion para listar las parcelas
   async function Parcela() {
+    const abortController = new AbortController();
     try {
       let response = await fetch(`${URL}/listaParcela`, {
-         headers: {
-                  Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
-              },
+        signal: abortController.signal,
+        headers: {
+          Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
+        },
       });
       response = await response.json();
       setParcela(response.data);
@@ -135,10 +168,13 @@ const va = 0;
   //funcion para listar los recursos
 
   useEffect(() => {
+    
     buscarAfectacionParcela();
     Afectacion();
     Parcela();
   }, [countRef]);
+
+  
 
   const select = makeStyles((theme) => ({
     formControl: {
@@ -152,7 +188,7 @@ const va = 0;
 
   const history = useHistory();
   const cancelar = () => {
-    history.push(``);
+    history.push(`/actividades/afectacionParcela`);
   };
 
   const handleInputChange = (e) => {
@@ -233,13 +269,13 @@ const va = 0;
   const classesSelect = select();
   return (
     <>
-      <Navbar nombre="Editar Actividad">
+      <Navbar nombre="Editar">
         <div className="container-fluid px-4">
           <div className="row">
             <div className="col-auto">
               {" "}
               <Link
-                to="/actividades/actividades"
+                to="/actividades/afectacionParcela"
                 type="button"
                 className="btn btn-secondary btn-sm"
               >
@@ -322,7 +358,6 @@ const va = 0;
                         />
                       </form>
                     </Grid>
-                    
 
                     <Grid item xs={12} sm={12}>
                       <Button

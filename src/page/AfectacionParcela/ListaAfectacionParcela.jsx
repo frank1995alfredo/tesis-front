@@ -102,7 +102,7 @@ const ListaAfectacionParcela = () => {
       console.log(error);
     }
     listaAPProductospro(editarAfectacionParcela.id);
-    pdfActividades();
+    
   }
 
   const seleccionarAfectacionParcela = (afectacionparcela, caso) => {
@@ -114,7 +114,23 @@ const ListaAfectacionParcela = () => {
       abrirCerrarModalEditar();
     }
   };
-  const pdfActividades = () => {
+ 
+
+  //metodo para editar
+  const history = useHistory();
+  const listaAPProductospro = async (id_1) => {
+    let response = await fetch(
+      `${URL}/buscarAfectacionParcelaProductox/${id_1}`, {
+        headers: 
+     {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+       Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
+     }
+     }
+    );
+    response = await response.json();
+    setListaPDF(response.data);
     const doc = new jsPDF();
     let hoy = new Date();
     let esta = "";
@@ -124,9 +140,12 @@ const ListaAfectacionParcela = () => {
     } else {
       esta = "Tarea Pendiente";
     }
-    listaPDF.map((iten, index) => {
-      calcular = calcular + iten.total_parcial;
-    });
+   
+    let suma = 0
+    const sumaTotal = () => {   
+      response.data.map(lista => suma += lista.total_parcial)
+      return suma
+    }
 
     let fechaActual =
       hoy.getFullYear() + "/" + (hoy.getMonth() + 1) + "/" + hoy.getDate();
@@ -134,12 +153,12 @@ const ListaAfectacionParcela = () => {
     doc.text("Fecha de reporte: " + `${fechaActual}`, 10, 20);
     doc.text("Persona a cargo: " + usuario, 114, 20);
 
-    doc.text("Detalle de la zona afectada", 10, 30); //le damos las coordenadas x = 70, y = 10
+    doc.text("Detalle de la zona afectada", 10, 30); 
     doc.text(
-      "____________________________________________________________",
+      "____________________",
       10,
       40
-    ); //le damos las coordenadas x = 70, y = 10
+    ); 
     doc.text(
       "Fecha de afectacion: " + `${editarAfectacionParcela.fecha}`,
       10,
@@ -160,43 +179,20 @@ const ListaAfectacionParcela = () => {
         halign: "center",
       },
       head: [["#", "Producto", "Cantidad", "Precio", "Total"]],
-      body: listaPDF.map((lista, index) => [
+      body: response.data.map((lista, index) => [
         index + 1,
         lista.nombre,
         lista.cantidad,
-        lista.costo,
-        lista.total_parcial,
+        `$`+lista.costo,
+        `$`+lista.total_parcial,
       ]),
     });
-    doc.text(
-      "____________________________________________________________",
-      10,
-      260
-    );
-    doc.text("Total: " + calcular, 140, 270);
+    
+    let finalY = (doc).lastAutoTable.finalY;
+    doc.text(`Total: ${sumaTotal()}`, 160, finalY + 10);
     let fechaActual2 =
-      hoy.getFullYear() + "_" + (hoy.getMonth() + 1) + "_" + hoy.getDate();
+      hoy.getFullYear() + "" + (hoy.getMonth() + 1) + "" + hoy.getDate();
     doc.save("reporteActividades" + `${fechaActual2}` + ".pdf");
-  };
-
-  //metodo para editar
-  const history = useHistory();
-  const listaAPProductospro = async (id_1) => {
-    try {
-      let response = await fetch(
-        `${URL}/buscarAfectacionParcelaProductox/${id_1}`, {
-             headers: 
-        {
-          Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
-        }
-        }
-      );
-      response = await response.json();
-      setListaPDF(response.data);
-      console.log(id_1);
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   const listaAPProductos = async (id_1) => {
@@ -295,6 +291,28 @@ const ListaAfectacionParcela = () => {
       }
     };
 
+
+    //USUARIO ACTUAL
+    const usuarioActual = async () => {
+      try {
+        let response = await fetch(`${URL}/usuarioActual`, {
+          signal: abortController.signal,
+          headers: {
+            Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
+          },
+        });
+
+        response = await response.json();
+        setUsuario(response.data);
+      } catch (error) {
+        console.log(error);
+        if (abortController.signal.aborted) {
+          console.log(abortController.signal.aborted);
+        } else throw error;
+      }
+    };
+
+    usuarioActual()
     listaAfectacionParcelas();
     return () => abortController.abort();
   }, []);
@@ -340,11 +358,7 @@ const ListaAfectacionParcela = () => {
                 data={listaAfectacionParcela}
                 title="Lista de las zonas afectadas"
                 actions={[
-                  {
-                    icon: "edit",
-                    tooltip: "Editar AfectacionParcela",
-                    onClick: (event, rowData) => handleUpdateClick(rowData.id),
-                  },
+                
                   {
                     icon: "delete",
                     tooltip: "Eliminar Afectación",
@@ -356,11 +370,7 @@ const ListaAfectacionParcela = () => {
                     tooltip: "Inserta una coreccion",
                     onClick: (event, rowData) => handleInsertClick(rowData.id),
                   },
-                  {
-                    icon: "search",
-                    tooltip: "Editar lista de productos",
-                    onClick: (event, rowData) => handleeditClick(rowData.id),
-                  },
+                 
                   {
                     icon: "folder",
                     tooltip: "Reporte de afectaciones individual",

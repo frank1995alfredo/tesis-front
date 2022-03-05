@@ -73,6 +73,13 @@ const ListaActividades = () => {
 
   //reporte en pdf de la lista de actividades
   const pdfActividades = () => {
+
+    let suma = 0
+    const sumaTotal = () => {   
+      listaPDF.map(lista => suma += lista.total_parcial_recurso)
+      return suma
+    }
+
     const doc = new jsPDF();
     let hoy = new Date();
     let fechaActual =
@@ -80,6 +87,7 @@ const ListaActividades = () => {
     doc.text("Reporte de actividades", 74, 10); //le damos las coordenadas x = 70, y = 10
     doc.text("Fecha: " + `${fechaActual}`, 10, 20);
     doc.text("Persona a cargo: " + usuario, 114, 20);
+    
     doc.autoTable({
       startY: 30,
       styles: {
@@ -91,10 +99,14 @@ const ListaActividades = () => {
         lista.labor,
         lista.trabajador,
         lista.recurso,
-        lista.total_parcial_recurso,
+        `$`+lista.total_parcial_recurso,
         lista.anio
       ]),
     });
+
+    let finalY = (doc).lastAutoTable.finalY;
+    doc.text("Gran total recurso: $" + `${sumaTotal()}`, 110, finalY + 10);
+
     let fechaActual2 =
       hoy.getFullYear() + "_" + (hoy.getMonth() + 1) + "_" + hoy.getDate();
     doc.save("reporteActividades" + `${fechaActual2}` + ".pdf");
@@ -111,6 +123,7 @@ const ListaActividades = () => {
     total_actividad: 0.0,
   });
 
+
   const seleccionarActividad = (actividad, caso) => {
     setActividadSeleccionada(actividad);
 
@@ -125,15 +138,24 @@ const ListaActividades = () => {
     setModalEliminar(!modalEliminar);
   };
 
-  
+ 
+
+
   const pdfAnio2 = (anio1) => {
+
+    let suma = 0
+    const sumaTotal = () => {   
+      listaPDF.filter(list => list.anio === anio1).map(lista => suma += lista.total_parcial_recurso)
+      return suma
+    }
+
     const doc = new jsPDF();
     let hoy = new Date();
     let fechaActual =
-      hoy.getFullYear() + "/" + (hoy.getMonth() + 1) + "/" + hoy.getDate();
+    hoy.getFullYear() + "/" + (hoy.getMonth() + 1) + "/" + hoy.getDate();
     doc.text("Reporte de actividades", 74, 10); //le damos las coordenadas x = 70, y = 10
     doc.text("Fecha: " + `${fechaActual}`, 10, 20);
-    doc.text("Persona a cargo: " + usuario, 114, 20);
+    doc.text("Persona a cargo: " + usuario, 114, 20);    
     doc.autoTable({
       startY: 30,
       styles: {
@@ -145,10 +167,13 @@ const ListaActividades = () => {
         lista.labor,
         lista.trabajador,
         lista.recurso,
-        lista.total_parcial_recurso,
-        lista.anio
-      ]),
+        `$`+lista.total_parcial_recurso,
+        lista.anio,
+      ]), 
     });
+   
+    let finalY = (doc).lastAutoTable.finalY;
+    doc.text("Gran total recurso: $" + `${sumaTotal()}`, 110, finalY + 10);
 
     let fechaActual2 =
       hoy.getFullYear() + "_" + (hoy.getMonth() + 1) + "_" + hoy.getDate();
@@ -165,6 +190,8 @@ const ListaActividades = () => {
         let response = await fetch(`${URL}/listaActividad`, {
           signal: abortController.signal,
           headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
           },
         });
@@ -186,6 +213,8 @@ const ListaActividades = () => {
         let response = await fetch(`${URL}/listaActividadPDF`, {
           signal: abortController.signal,
           headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
           },
         });
@@ -207,6 +236,8 @@ const ListaActividades = () => {
         let response = await fetch(`${URL}/usuarioActual`, {
           signal: abortController.signal,
           headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
           },
         });
@@ -226,6 +257,8 @@ const ListaActividades = () => {
         let response = await fetch(`${URL}/listaActividadAnio`, {
           signal: abortController.signal,
           headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
           },
         });

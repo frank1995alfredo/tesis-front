@@ -16,17 +16,18 @@ import Alerta from "../../components/Alerts/Alerta";
 import URL from "../../configuration/URL";
 import Navbar from "../../components/Navbar/Navbar";
 import jsPDF from "jspdf";
-import valorToken from "../../configuration/valorToken";
 import "jspdf-autotable";
-
+import valorToken from "../../configuration/valorToken";
 
 const ModalReporte_2 = ({
   setProductoSeleccionado,
   productoSeleccionado,
   modalReporte,
   abrirCerrarModalReporte,
+  setListaAfectacionParcela,
+  listaAfectacionParcela,
 }) => {
-  const [seleccion, setSeleccion] = useState([]);
+  const [fecha, setFecha] = useState([]);
   const [listaProducto, setListaProducto] = useState([]);
   const [listaPDF, setListaPDF] = useState([]);
   const [usuario, setUsuario] = useState([]);
@@ -36,89 +37,63 @@ const ModalReporte_2 = ({
     },
   }));
 
-  const token = valorToken();
-
-  const SelectChangex = function (e) {
-    const opcion = e.target.value;
-    setSeleccion(opcion);
-
-    setSeleccion(opcion);
-    console.log(opcion);
-  };
-  async function listaProductoFechaCompra() {
-    try {
-      let response = await fetch(
-        `${URL}/buscarProductoFechaCompra/${productoSeleccionado.fecha_compra}`,{
-           headers: {
-            Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
-          },
-        }
-      );
-      response = await response.json();
-      console.log(seleccion == 1);
-
-      setListaProducto(response.data);
-      setListaPDF(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  async function listaProducto2() {
-    try {
-      let response = await fetch(`${URL}/listaProducto`, { headers: {
-            Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
-          },});
-      response = await response.json();
-      console.log(seleccion == 1);
-      if (seleccion == 0) {
-        console.log("res");
-        const arreglos = response.data.filter((Ser) => Ser.cantidad > 0);
-        setListaProducto(arreglos);
-        setListaPDF(arreglos);
-      } else {
-        if (seleccion == 1) {
-          const arreglos = response.data.filter((Ser) => Ser.cantidad === 0);
-          setListaProducto(arreglos);
-          setListaPDF(arreglos);
-        } else {
-          if (seleccion == 2) {
-            setListaProducto(response.data);
-            setListaPDF(response.data);
-          } else {
-          }
-        }
+  async function buscarFechasif() {
+    let response = await fetch(
+      `${URL}/buscarFechasifAfectacionParcela/${fecha.fechainicio}/${fecha.fechafinal}`,{
+        headers: {
+          Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
+        },
       }
-    } catch (error) {
-      console.log(error);
-    }
+    );
+    response = await response.json();
+
+    setListaPDF(response.data);
+
+    const doc = new jsPDF();
+
+    let hoy = new Date();
+    let fechaActual =
+      hoy.getFullYear() + "/" + (hoy.getMonth() + 1) + "/" + hoy.getDate();
+    doc.text("Reporte de zonas afectadas", 74, 10); //le damos las coordenadas x = 70, y = 10
+    doc.text("Fecha: " + `${fechaActual}`, 10, 20);
+    doc.text("Persona a cargo: " + usuario, 114, 20);
+    doc.autoTable({
+      startY: 30,
+      styles: {
+        halign: "center",
+      },
+      head: [
+        ["#", "Codigo", "Parcela", "Afectacion", "Fecha", "Estado Actual"],
+      ],
+      body: response.data.map((lista, index) => [
+        index + 1,
+        lista.id,
+        lista.numero,
+        lista.nombre_afectacion,
+        lista.fecha,
+        (index = lista.estado ? "Pendiente" : "Terminado"),
+      ]),
+    });
+    let fechaActual2 =
+      hoy.getFullYear() + "_" + (hoy.getMonth() + 1) + "_" + hoy.getDate();
+    doc.save("reporteActividades" + `${fechaActual2}` + ".pdf");
   }
 
   useEffect(() => {
     const abortController = new AbortController();
 
-    //LISTAR ACTIVIDAD
-
-    //LISTAR Producto
-    const listaProducto = async () => {
+    const usuarioActual = async () => {
       try {
-        let response = await fetch(`${URL}/listaProducto`, {
+        let response = await fetch(`${URL}/usuarioActual`, {
           signal: abortController.signal,
-           headers: {
-            Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
-          },
-        });
-        response = await response.json();
-        console.log(seleccion);
-        if (seleccion === 0) {
-          const arreglos = response.data.filter((Ser) => Ser.cantidad === 0);
-          setListaProducto(arreglos);
-          setListaPDF(arreglos);
-        } else {
-          if (seleccion[0] === 1) {
-          } else {
+          headers: 
+          {
+            Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
           }
-        }
+        });
+
+        response = await response.json();
+        setUsuario(response.data);
       } catch (error) {
         console.log(error);
         if (abortController.signal.aborted) {
@@ -127,24 +102,18 @@ const ModalReporte_2 = ({
       }
     };
 
-    listaProducto();
+    const va = 0;
+   
+    usuarioActual();
     return () => abortController.abort();
   }, []);
 
-  const genera = (e) => {
-    listaProducto2();
-    pdfActividades();
-  };
-  const genera2 = (e) => {
-    listaProductoFechaCompra();
-    pdfActividades();
-  };
-  const handleChange = (e) => {
+  const token = valorToken()
+
+
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setProductoSeleccionado((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+    setFecha({ ...fecha, [name]: value });
   };
   const select = makeStyles((theme) => ({
     formControl: {
@@ -156,71 +125,7 @@ const ModalReporte_2 = ({
     },
   }));
   const styles = useStyles();
-  const pdfAnio2 = (anio1) => {
-    const doc = new jsPDF();
-    let hoy = new Date();
-    let fechaActual =
-      hoy.getFullYear() + "/" + (hoy.getMonth() + 1) + "/" + hoy.getDate();
-    doc.text("Reporte de actividades", 74, 10); //le damos las coordenadas x = 70, y = 10
-    doc.text("Fecha: " + `${fechaActual}`, 10, 20);
-    doc.text("Persona a cargo: " + usuario, 114, 20);
-    doc.autoTable({
-      startY: 30,
-      styles: {
-        halign: "center",
-      },
-      head: [["#", "Labor", "Trabajador", "Recurso", "Total Recurso", "Año"]],
-      body: listaPDF
-        .filter((list) => list.anio === anio1)
-        .map((lista, index) => [
-          index + 1,
-          lista.nombre,
-          lista.precio,
-          lista.cantidad,
-          lista.descripcion,
-        ]),
-    });
-
-    let fechaActual2 =
-      hoy.getFullYear() + "_" + (hoy.getMonth() + 1) + "_" + hoy.getDate();
-    doc.save("reporteActividades" + `${fechaActual2}` + ".pdf");
-  };
-  const pdfActividades = () => {
-    const doc = new jsPDF();
-    let hoy = new Date();
-    let fechaActual =
-      hoy.getFullYear() + "/" + (hoy.getMonth() + 1) + "/" + hoy.getDate();
-    doc.text("Reporte de productos", 74, 10); //le damos las coordenadas x = 70, y = 10
-    doc.text("Fecha: " + `${fechaActual}`, 10, 20);
-    doc.text("Persona a cargo: " + usuario, 114, 20);
-    doc.autoTable({
-      startY: 30,
-      styles: {
-        halign: "center",
-      },
-      head: [
-        [
-          "#",
-          "Producto",
-          "Existencia",
-          "Precio",
-          "Fecha Compra",
-          "Fecha Caducidad",
-        ],
-      ],
-      body: listaPDF.map((lista, index) => [
-        index + 1,
-        lista.nombre,
-        lista.cantidad,
-        lista.precio,
-        lista.fecha_compra,
-        lista.fecha_caducidad,
-      ]),
-    });
-    let fechaActual2 =
-      hoy.getFullYear() + "_" + (hoy.getMonth() + 1) + "_" + hoy.getDate();
-    doc.save("reporteActividades" + `${fechaActual2}` + ".pdf");
-  };
+  console.log(listaAfectacionParcela);
 
   const classesSelect = select();
   return (
@@ -239,8 +144,8 @@ const ModalReporte_2 = ({
                     label="Desde"
                     type="date"
                     defaultValue="2017-05-24"
-                    name="fecha_compra"
-                    onChange={handleChange}
+                    name="fechainicio"
+                    onChange={handleInputChange}
                     className={styles.inputMaterial}
                   />
                 </Grid>
@@ -254,7 +159,7 @@ const ModalReporte_2 = ({
                       size="small"
                       variant="contained"
                       color="primary"
-                      onClick={genera}
+                      onClick={buscarFechasif}
                     >
                       Generar
                     </Button>
@@ -267,8 +172,8 @@ const ModalReporte_2 = ({
                     label="hasta"
                     type="date"
                     defaultValue="2017-05-24"
-                    name="fecha_compra"
-                    onChange={handleChange}
+                    name="fechafinal"
+                    onChange={handleInputChange}
                     className={styles.inputMaterial}
                   />
                 </Grid>

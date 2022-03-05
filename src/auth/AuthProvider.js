@@ -14,8 +14,7 @@ const AuthProvider = ({ children }) => {
   const [nombreUsuario, setNombreUsuario] = useState(
     JSON.parse(localStorage.getItem('nombreUsuario')) || null
   )
-  console.log(JSON.parse(localStorage.getItem('tipouser')) === 'Admin' ? true : false)
-
+  
   useEffect(() => {
     try {
       localStorage.setItem('token', JSON.stringify(token));
@@ -25,7 +24,6 @@ const AuthProvider = ({ children }) => {
       localStorage.removeItem("token");
       localStorage.removeItem("tipouser");
       localStorage.removeItem("nombreUsuario");
-      console.log(error)
     }
   }, [token]);
 

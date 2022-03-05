@@ -23,6 +23,7 @@ import URL from "../../configuration/URL";
 import { useHistory } from "react-router-dom";
 import valorToken from "../../configuration/valorToken";
 import soloNumeros from "../../configuration/soloNumeros";
+import validacionEntrada from "../../configuration/validacionEntrada";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -82,7 +83,7 @@ const FormEditarActividad = () => {
           costo: response.data.data[0].costo,
         });
 
-        console.log(response.data)
+        console.log(response.data.data[0].idparcela)
       });
     } catch (error) {
       console.log(error);
@@ -90,6 +91,17 @@ const FormEditarActividad = () => {
   };
 
   const peticionEditar = async () => {
+
+
+    if((validacionEntrada(editarActividad.idtipolabor)) || (validacionEntrada(editarActividad.idparcela_1)) ||
+      (validacionEntrada(editarActividad.avance)) || (validacionEntrada(editarActividad.total_actividad)) ||
+      (validacionEntrada(editarActividad.idtrabajador))) {
+      Alerta.fire({
+        icon: "error",
+        title: "LLene todos los campos.",
+      });
+    } else { 
+
     let data = {
       idtipolabor: editarActividad.idtipolabor,
       idparcela_1: editarActividad.idparcela_1,
@@ -120,6 +132,7 @@ const FormEditarActividad = () => {
     } catch (error) {
       console.log(error);
     }
+  }
   };
 
   //funcion para listar los labores
@@ -192,7 +205,7 @@ const FormEditarActividad = () => {
 
   const history = useHistory();
   const cancelar = () => {
-    history.push(``);
+    history.push(`/actividades/actividades`);
   };
 
   const handleInputChange = (e) => {

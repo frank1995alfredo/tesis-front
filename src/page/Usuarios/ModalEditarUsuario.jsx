@@ -44,6 +44,8 @@ const ModalEditarUsuario = ({
         await axios.get(`${URL}/buscarUsuario/${usuarioSeleccionado.id}`, {
           headers: 
           {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
           }
         }).then((response) => {

@@ -81,6 +81,8 @@ const ListaUsuarios = () => {
           signal: abortController.signal,
           headers: 
           {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
           }
         });

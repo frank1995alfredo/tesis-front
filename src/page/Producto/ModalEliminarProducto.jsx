@@ -7,6 +7,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import axios from "axios";
 import Alerta from "../../components/Alerts/Alerta";
 import URL from "../../configuration/URL";
+import valorToken from "../../configuration/valorToken";
 
 const ModalEliminarProducto = ({
   productoSeleccionado,
@@ -19,7 +20,14 @@ const ModalEliminarProducto = ({
 
   const eliminarProducto = async () => {
 
-    await axios.delete(`${URL}/eliminarProducto/` + productoSeleccionado.id)
+    const token = valorToken();
+    await axios.delete(`${URL}/eliminarProducto/` + productoSeleccionado.id, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
+    },
+    })
       .then((response) => {
         setListaProducto(
           listaProducto.filter((producto) => producto.id !== productoSeleccionado.id)

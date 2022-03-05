@@ -24,6 +24,8 @@ const ModalEliminarAfectacion = ({
     await axios.delete(`${URL}/eliminarAfectacion/` + afectacionSeleccionado.id, {
       headers: 
         {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
         }
     })

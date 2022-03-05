@@ -67,8 +67,14 @@ const ListaProducto = () => {
   const [modalReporte, setModalReporte] = useState(false);
   const [productoSeleccionado, setProductoSeleccionado] = useState({
     id: 0,
-    nombre_producto: "",
-    decripcion: "",
+    nombre: "",
+    descripcion: "",
+    fecha_compra: "",
+    fecha_caducidad: "",
+    precio: 0.0,
+    cantidad: 0,
+
+
   });
 
   const seleccionarProducto = (producto, caso) => {
@@ -111,6 +117,8 @@ const ListaProducto = () => {
         let response = await fetch(`${URL}/listaProducto`, {
           signal: abortController.signal,
             headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
             Authorization: `Bearer ${token.replace(/['"]+/g, "")}`,
           },
         });
@@ -146,7 +154,7 @@ const ListaProducto = () => {
             <div className="col-auto">
               {" "}
               <Link
-                to="/actividades"
+                to="/bodega"
                 type="button"
                 className="btn btn-secondary btn-sm"
               >

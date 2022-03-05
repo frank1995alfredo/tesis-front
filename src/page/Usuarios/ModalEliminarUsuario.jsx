@@ -24,6 +24,8 @@ const ModalEliminarUsuario = ({
     await axios.delete(`${URL}/eliminarUsuario/` + usuarioSeleccionado.id, {
       headers: 
         {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token.replace(/['"]+/g, '')}`,
         }
     })

@@ -7,7 +7,7 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import CancelIcon from "@material-ui/icons/Cancel";
 import FormControl from "@material-ui/core/FormControl";
-import Input from "@material-ui/core/Input";
+
 import NumberFormat from "react-number-format";
 
 import Select from "@material-ui/core/Select";
@@ -23,7 +23,8 @@ import { useHistory } from "react-router-dom";
 import valorToken from "../../configuration/valorToken";
 import soloNumeros from "../../configuration/soloNumeros";
 import ModalAgregarRecurso from "../Actividades/ModalAgregarRecurso";
-import TablaActividad from "./TablaActividad";
+
+import validacionEntrada from "../../configuration/validacionEntrada";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -49,9 +50,9 @@ const FormAgregarActividad = () => {
     fecha_fin: "",
     avance: "",
     total_actividad: 0.0,
-    idrecurso: 0,
-    cantidad: 0,
-    costo: 0.0,
+    idrecurso: "",
+    cantidad: "",
+    costo: "",
     idtrabajador: null
   };
 
@@ -195,6 +196,16 @@ const FormAgregarActividad = () => {
   }, []);
 
   const peticionAgregar = async () => {
+
+    if((validacionEntrada(agregarActividad.idtipolabor)) || (validacionEntrada(agregarActividad.idparcela_1)) ||
+      (validacionEntrada(agregarActividad.avance)) || (validacionEntrada(agregarActividad.total_actividad)) ||
+      (validacionEntrada(agregarActividad.idtrabajador))) {
+      Alerta.fire({
+        icon: "error",
+        title: "LLene todos los campos.",
+      });
+    } else { 
+
     await axios
       .post(`${URL}/crearActividad`, agregarActividad, {
         headers: 
@@ -212,6 +223,7 @@ const FormAgregarActividad = () => {
       .catch((error) => {
         console.log(error);
       });
+    }
   };
 
   var hoy = new Date();
@@ -405,6 +417,7 @@ const FormAgregarActividad = () => {
                         name="total_actividad"
                         label="Total Actividad"
                         onChange={validacionNumero}
+                        value={agregarActividad.total_actividad}
                         fullWidth
                       />
                     </Grid>
@@ -431,8 +444,9 @@ const FormAgregarActividad = () => {
                       <TextField
                         label="Cantidad de recurso"
                         pattern="[0-9]{0,13}"
-                        onChange={validacionNumero}
                         name="cantidad"
+                        onChange={validacionNumero}
+                        value={agregarActividad.cantidad}
                         id="formatted-numberformat-input"
                       />
                     </Grid>
@@ -440,9 +454,9 @@ const FormAgregarActividad = () => {
                       <TextField
                         label="Costo del recurso"
                         pattern="[0-9]{0,13}"
-                        onChange={validacionNumero}
                         name="costo"
-
+                        onChange={validacionNumero}
+                        value={agregarActividad.costo}
                         id="formatted-numberformat-input"
                       />
                     </Grid>
